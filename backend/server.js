@@ -1,0 +1,62 @@
+import express, { json, urlencoded, static as expressStatic } from 'express';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import { join, resolve } from 'path';
+require('dotenv').config();
+
+// Import routes
+import leetcodeRoutes from './routes/leetcode';
+import codeforcesRoutes from './routes/codeforces';
+import authRoutes from './routes/auth';
+import userRoutes from './routes/users';
+
+// Import database connection
+import connectDB from './config/db';
+
+// Connect to database
+connectDB();
+
+const app = express();
+
+// Middleware
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true
+}));
+app.use(json());
+app.use(urlencoded({ extended: true }));
+app.use(cookieParser());
+
+// API Routes
+app.use('/api/leetcode', leetcodeRoutes);
+app.use('/api/codeforces', codeforcesRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+
+// Serve static assets in production
+if (process.env.NODE_ENV === 'production') {
+  try {
+    // Set static folder
+    const staticPath = join(__dirname, '../frontend/build');
+    app.use(express.static(staticPath));
+
+    app.get('*', (req, res) => {
+      res.sendFile(resolve(staticPath, 'index.html'));
+    });
+  } catch (error) {
+    console.error('Error setting up static files:', error);
+  }
+}
+
+const PORT = process.env.PORT || 5000;
+
+const server = app.listen(PORT, () => 
+  console.log(`Server running on port ${PORT}`)
+);
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (err, promise) => {
+  console.log(`Error: ${err.message}`);
+  // Close server & exit process
+  server.close(() => process.exit(1));
+});

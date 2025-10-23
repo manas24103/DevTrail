@@ -1,7 +1,7 @@
-const express = require('express');
-const router = express.Router();
-const { getLeetcodeData } = require('../controllers/leetcodeController');
+import express from 'express';
+import router from express.Router();
+import { getLeetcodeData } from '../controllers/leetcodeController';
 
 router.get('/:username', getLeetcodeData);
 
-module.exports = router;
+export default router;

@@ -1,15 +1,15 @@
-const express = require('express');
-const { protect } = require('../middleware/auth.middleware');
-const User = require('../models/User.models');
+import { Router } from 'express';
+import { protect } from '../middleware/auth.middleware';
+import { findById } from '../models/User.models';
 
-const router = express.Router();
+const router = Router();
 
 // @route   PUT /api/users/profile
 // @desc    Update user profile
 // @access  Private
 router.put('/profile', protect, async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
+    const user = await findById(req.user.id);
     
     if (user) {
       user.codeforcesHandle = req.body.codeforcesHandle || user.codeforcesHandle;
@@ -71,4 +71,4 @@ router.get('/stats', protect, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

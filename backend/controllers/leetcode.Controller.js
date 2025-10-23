@@ -1,4 +1,4 @@
-import { get } from 'axios';
+import axios from 'axios';
 import { RateLimiter } from 'limiter';
 
 // Base URL for the alfa-leetcode-api
@@ -17,7 +17,7 @@ const makeRequest = async (endpoint, params = {}) => {
     // Wait for rate limiter
     await new Promise(resolve => limiter.removeTokens(1, resolve));
     
-    const response = await get(`${BASE_URL}${endpoint}`, {
+    const response = await axios.get(`${BASE_URL}${endpoint}`, {
       params,
       timeout: 10000, // 10 second timeout
       headers: {

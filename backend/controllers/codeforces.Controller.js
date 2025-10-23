@@ -1,4 +1,4 @@
-import { get } from 'axios';
+import axios from 'axios';
 import { createHash } from 'crypto';
 
 // Rate limiting setup
@@ -69,7 +69,7 @@ const getCodeforcesData = async (req, res) => {
     //   params.append('apiSig', signature);
     // }
 
-    const response = await get(`https://codeforces.com/api/user.info?${params}`, {
+    const response = await axios.get(`https://codeforces.com/api/user.info?${params}`, {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'

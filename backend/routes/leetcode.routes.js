@@ -1,7 +1,6 @@
-import express from 'express';
-import router from express.Router();
-import { getLeetcodeData } from '../controllers/leetcodeController';
-
-router.get('/:username', getLeetcodeData);
+import { Router } from 'express';
+const router = Router();
+import leetcodeController from '../controllers/leetcode.Controller.js';
+router.get('/:username', leetcodeController.getUserProfile);
 
 export default router;

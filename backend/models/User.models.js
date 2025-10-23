@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
-import jwt, { TokenExpiredError } from 'jsonwebtoken';
+import jwtPkg from 'jsonwebtoken';
+const { sign, TokenExpiredError } = jwtPkg;
 
 const userSchema = new mongoose.Schema({
   username: {type: String,required: true,unique: true,trim: true,lowercase: true },
@@ -48,19 +49,18 @@ userSchema.methods.comparePassword = async function(candidatePassword) {
 //Method to generate JWT token
 
 const User = mongoose.model('User', userSchema);
-userSchema.method.genrateAuthTaken=function(){
+userSchema.methods.generateAuthTaken = function(){
   if(!process.env.JWT_SECRET){
-    throw new error('JWT_SECRET is not configured');
+    throw new Error('JWT_SECRET is not configured');
   }
-  return jwt.sign(
+  return sign(
     {
-      userId:this.id,
+      userId: this._id,
     },
-    
-      process.env.JWT_SECRET,
-      {expiresIn:'1d'}    
+    process.env.JWT_SECRET,
+    {expiresIn:'1d'}    
   );
 };
 
-const user=mongoose.model.user || mongoose.model('user',userSchema);
+const user = mongoose.model('User') || mongoose.model('User', userSchema);
 export default user;

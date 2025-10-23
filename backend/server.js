@@ -2,16 +2,17 @@ import express, { json, urlencoded, static as expressStatic } from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { join, resolve } from 'path';
-require('dotenv').config();
+import dotenv from 'dotenv';
+dotenv.config();
 
 // Import routes
-import leetcodeRoutes from './routes/leetcode';
-import codeforcesRoutes from './routes/codeforces';
-import authRoutes from './routes/auth';
-import userRoutes from './routes/users';
+import leetcodeRoutes from './routes/leetcode.routes.js';
+import codeforcesRoutes from './routes/codeforces.routes.js';
+import authRoutes from './routes/auth.routes.js';
+import userRoutes from './routes/users.routes.js';
 
 // Import database connection
-import connectDB from './config/db';
+import connectDB from './config/db.js';
 
 // Connect to database
 connectDB();

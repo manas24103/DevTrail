@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { protect } from '../middleware/auth.middleware';
-import { findById } from '../models/User.models';
+import { authenticate as protect } from '../middleware/auth.middleware.js';
+import User from '../models/User.models.js';
 
 const router = Router();
 
@@ -9,7 +9,7 @@ const router = Router();
 // @access  Private
 router.put('/profile', protect, async (req, res) => {
   try {
-    const user = await findById(req.user.id);
+    const user = await User.findById(req.user.id);
     
     if (user) {
       user.codeforcesHandle = req.body.codeforcesHandle || user.codeforcesHandle;

@@ -1,6 +1,6 @@
-import jwt, { TokenExpiredError } from 'jsonwebtoken';
-const{verify ,TokrEpiredError}=jwt;
-import User from '../models/User.models';
+import jwtPkg from 'jsonwebtoken';
+const { verify, TokenExpiredError } = jwtPkg;
+import User from '../models/User.models.js';
 
 // authentication middleware to verify jwt token 
 export async function authenticate(req,res,next) {

@@ -1,9 +1,45 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5000/api';
+// Create axios instance with base URL
+const api = axios.create({
+  baseURL: 'http://localhost:5000/api',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
-export const getCodeforcesData = (username) =>
-  axios.get(`${API_BASE_URL}/codeforces/${username}`);
+// Add a request interceptor to include the auth token in requests
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
-export const getLeetcodeData = (username) =>
-  axios.get(`${API_BASE_URL}/leetcode/${username}`);
+// Auth API
+export const authApi = {
+  login: (email, password) => api.post('/auth/login', { email, password }),
+  register: (userData) => api.post('/auth/register', userData),
+  getProfile: () => api.get('/users/me'),
+};
+
+// Problems API
+export const problemsApi = {
+  getStats: () => api.get('/problems/stats'),
+  getRecentActivity: () => api.get('/problems/activity'),
+  getLeaderboard: () => api.get('/leaderboard'),
+};
+
+// User API
+export const userApi = {
+  updateProfile: (userId, data) => api.put(`/users/${userId}`, data),
+  changePassword: (data) => api.post('/users/change-password', data),
+};
+
+export default api;

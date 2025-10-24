@@ -21,9 +21,10 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: "https://devtrail.vercel.app",
+  origin: ["http://localhost:3000", "https://devtrail.vercel.app", "http://127.0.0.1:3000"],
   credentials: true
 }));
+
 app.use(json());
 app.use(urlencoded({ extended: true }));
 app.use(cookieParser());

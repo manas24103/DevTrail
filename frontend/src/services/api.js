@@ -1,11 +1,18 @@
 import axios from 'axios';
 
+// Get the API URL from environment variables with fallback
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
+// Log the API URL for debugging (remove in production)
+console.log('API Base URL:', API_BASE_URL);
+
 // Create axios instance with base URL
 const api = axios.create({
-  baseURL: `${process.env.REACT_APP_API_URL}/api`,
+  baseURL: `${API_BASE_URL}/api`,
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // Important for cookies, authorization headers with HTTPS
 });
 
 // Add a request interceptor to include the auth token in requests

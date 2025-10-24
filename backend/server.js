@@ -21,10 +21,11 @@ const app = express();
 
 // CORS Configuration
 const allowedOrigins = [
-  'https://devtrail.vercel.app',   // Production frontend
+  'https://dvmatrics.vercel.app',  // Production frontend
   'http://localhost:3000',         // Local development
   'http://localhost:5173',         // Vite dev server
-  'http://127.0.0.1:3000'          // Alternative localhost
+  'http://127.0.0.1:3000',         // Alternative localhost
+  'http://localhost:5000'          // Local backend for testing
 ];
 
 // CORS middleware

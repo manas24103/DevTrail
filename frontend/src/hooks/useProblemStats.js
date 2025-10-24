@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { problemsApi } from '../services/api';
 
 export const useProblemStats = () => {
   const [stats, setStats] = useState({

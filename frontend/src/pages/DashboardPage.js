@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { FiLogOut, FiSettings, FiUser, FiAward, FiCode, FiBarChart2 } from 'react-icons/fi';
+import { FiLogOut, FiUser, FiAward, FiCode } from 'react-icons/fi';
 import { Bar, Line } from 'react-chartjs-2';
 import { useProblemStats } from '../hooks/useProblemStats';
 

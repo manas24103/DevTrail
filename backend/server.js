@@ -19,11 +19,37 @@ connectDB();
 
 const app = express();
 
-// Middleware
+// CORS Configuration
+const allowedOrigins = [
+  'https://devtrail.vercel.app',   // Production frontend
+  'http://localhost:3000',         // Local development
+  'http://localhost:5173',         // Vite dev server
+  'http://127.0.0.1:3000'          // Alternative localhost
+];
+
+// CORS middleware
 app.use(cors({
-  origin: ["http://localhost:3000", "https://devtrail.vercel.app", "http://127.0.0.1:3000"],
-  credentials: true
+  origin: function(origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // Check if the origin is in the allowed list
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      console.error('CORS Error - Blocked Origin:', origin);
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true,    // Required for cookies, authorization headers with HTTPS
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposedHeaders: ['set-cookie'],
+  maxAge: 86400  // 24 hours
 }));
+
+// Handle preflight requests
+app.options('*', cors());
 
 app.use(json());
 app.use(urlencoded({ extended: true }));

@@ -20,37 +20,51 @@ connectDB();
 const app = express();
 
 // CORS Configuration
-const allowedOrigins = [
-  'https://dvmatrics.vercel.app',  // Production frontend
-  'http://localhost:3000',         // Local development
-  'http://localhost:5173',         // Vite dev server
-  'http://127.0.0.1:3000',         // Alternative localhost
-  'http://localhost:5000'          // Local backend for testing
-];
-
-// CORS middleware
-app.use(cors({
-  origin: function(origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    // Check if the origin is in the allowed list
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-      console.error('CORS Error - Blocked Origin:', origin);
-      return callback(new Error(msg), false);
-    }
-    return callback(null, true);
-  },
-  credentials: true,    // Required for cookies, authorization headers with HTTPS
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+const corsOptions = {
+  origin: [
+    'https://dvmatrics.vercel.app',  // Production frontend
+    'http://localhost:3000',         // Local development
+    'http://localhost:5173',         // Vite dev server
+    'http://127.0.0.1:3000',         // Alternative localhost
+    'http://localhost:5000'          // Local backend for testing
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+    'X-Requested-With',
+    'Accept',
+    'Origin',
+    'X-Requested-With',
+    'X-Auth-Token'
+  ],
+  credentials: true,
   exposedHeaders: ['set-cookie'],
-  maxAge: 86400  // 24 hours
-}));
+  maxAge: 86400,  // 24 hours
+  preflightContinue: false,
+  optionsSuccessStatus: 204
+};
 
-// Handle preflight requests
-app.options('*', cors());
+// Apply CORS with the specified options
+app.use(cors(corsOptions));
+
+// Handle preflight requests for all routes
+app.options('*', cors(corsOptions));
+
+// Log CORS errors for debugging
+app.use((err, req, res, next) => {
+  if (err) {
+    console.error('CORS Error:', err);
+    if (err.name === 'CorsError') {
+      return res.status(403).json({ 
+        success: false, 
+        error: 'Not allowed by CORS',
+        details: err.message 
+      });
+    }
+  }
+  next();
+});
 
 app.use(json());
 app.use(urlencoded({ extended: true }));

@@ -21,7 +21,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: "https://<your-vercel-frontend>.vercel.app",
+  origin: "https://devtrail.vercel.app",
   credentials: true
 }));
 app.use(json());

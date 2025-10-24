@@ -23,48 +23,19 @@ const app = express();
 const corsOptions = {
   origin: [
     'https://dvmatrics.vercel.app',  // Production frontend
-    'http://localhost:3000',         // Local development
-    'http://localhost:5173',         // Vite dev server
-    'http://127.0.0.1:3000',         // Alternative localhost
-    'http://localhost:5000'          // Local backend for testing
+    'http://localhost:3000'          // Local development
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: [
-    'Content-Type',
-    'Authorization',
-    'X-Requested-With',
-    'Accept',
-    'Origin',
-    'X-Requested-With',
-    'X-Auth-Token'
-  ],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
-  exposedHeaders: ['set-cookie'],
-  maxAge: 86400,  // 24 hours
-  preflightContinue: false,
-  optionsSuccessStatus: 204
+  optionsSuccessStatus: 200  // Important for some legacy browsers
 };
 
-// Apply CORS with the specified options
+// Apply CORS middleware - must be before routes
 app.use(cors(corsOptions));
 
-// Handle preflight requests for all routes
+// Explicitly handle OPTIONS requests for all routes
 app.options('*', cors(corsOptions));
-
-// Log CORS errors for debugging
-app.use((err, req, res, next) => {
-  if (err) {
-    console.error('CORS Error:', err);
-    if (err.name === 'CorsError') {
-      return res.status(403).json({ 
-        success: false, 
-        error: 'Not allowed by CORS',
-        details: err.message 
-      });
-    }
-  }
-  next();
-});
 
 app.use(json());
 app.use(urlencoded({ extended: true }));

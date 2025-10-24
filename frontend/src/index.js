@@ -5,7 +5,7 @@ import './index.css';
 import axios from 'axios';
 
 // Set base URL for API requests
-axios.defaults.baseURL = 'http://localhost:5000/api';
+axios.defaults.baseURL = `${process.env.REACT_APP_API_URL}/api`;
 
 // Add a request interceptor to include the auth token in requests
 axios.interceptors.request.use(

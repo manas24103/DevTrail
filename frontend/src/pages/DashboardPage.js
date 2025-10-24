@@ -42,7 +42,6 @@ const DashboardPage = () => {
     hard, 
     recentActivity, 
     rank, 
-    rating, 
     loading, 
     error,
     refetch 

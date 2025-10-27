@@ -38,10 +38,19 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Update user data in context
+  const updateUser = (userData) => {
+    setCurrentUser(prev => ({
+      ...prev,
+      ...userData
+    }));
+  };
+
   // Login function
   const login = async (email, password) => {
     try {
       setError('');
+      setLoading(true);
       const response = await authApi.login(email, password);
       const { token, data: user } = response.data;
       
@@ -53,12 +62,15 @@ export const AuthProvider = ({ children }) => {
       
       return { success: true };
     } catch (err) {
+      console.error('Login error:', err);
       const errorMessage = err.response?.data?.message || 'Login failed. Please check your credentials.';
       setError(errorMessage);
       return { 
         success: false, 
         error: errorMessage 
       };
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -122,6 +134,7 @@ export const AuthProvider = ({ children }) => {
     register,
     logout,
     updateProfile,
+    updateUser,
     isAuthenticated: !!currentUser,
   };
 

@@ -33,19 +33,31 @@ api.interceptors.request.use(
 export const authApi = {
   login: (email, password) => api.post('/auth/login', { email, password }),
   register: (userData) => api.post('/auth/register', userData),
-  getProfile: () => api.get('/users/me'),
+  getProfile: () => api.get('/auth/me'),
 };
 
-// Problems API
-export const problemsApi = {
-  getStats: () => api.get('/problems/stats'),
-  getRecentActivity: () => api.get('/problems/activity'),
+// LeetCode API
+export const leetcodeApi = {
+  getStats: () => api.get('/leetcode/stats'),
+  getRecentActivity: () => api.get('/leetcode/activity'),
+  getProblems: () => api.get('/leetcode/problems'),
+};
+
+// Codeforces API
+export const codeforcesApi = {
+  getStats: (handle) => api.get(`/codeforces/user/${handle}`),
+  getContests: () => api.get('/codeforces/contests'),
+  getSubmissions: (handle) => api.get(`/codeforces/submissions/${handle}`),
+};
+
+// Leaderboard API
+export const leaderboardApi = {
   getLeaderboard: () => api.get('/leaderboard'),
 };
 
 // User API
 export const userApi = {
-  updateProfile: (userId, data) => api.put(`/users/${userId}`, data),
+  updateProfile: (data) => api.put('/users/profile', data),
   changePassword: (data) => api.post('/users/change-password', data),
 };
 

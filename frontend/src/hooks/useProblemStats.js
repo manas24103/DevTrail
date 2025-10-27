@@ -1,6 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { leetcodeApi, codeforcesApi } from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
 
 export const useProblemStats = () => {
+  const { currentUser } = useAuth();
   const [stats, setStats] = useState({
     totalProblems: 0,
     easy: 0,
@@ -13,36 +16,64 @@ export const useProblemStats = () => {
     error: null
   });
 
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
+    if (!currentUser) {
+      setStats(prev => ({ ...prev, loading: false }));
+      return;
+    }
+
     try {
       setStats(prev => ({ ...prev, loading: true, error: null }));
       
-      // In a real app, we would fetch this data from the backend
-      // const [statsResponse, activityResponse] = await Promise.all([
-      //   problemsApi.getStats(),
-      //   problemsApi.getRecentActivity()
-      // ]);
-      
-      // Mock data for now
-      const mockStats = {
-        totalProblems: 42,
-        easy: 20,
-        medium: 18,
-        hard: 4,
-        rank: 1245,
-        rating: 1650,
+      // Fetch data from both LeetCode and Codeforces in parallel
+      const [leetcodeData, codeforcesData] = await Promise.all([
+        leetcodeApi.getStats().catch(err => {
+          console.error('Error fetching LeetCode data:', err);
+          return null;
+        }),
+        currentUser.codeforcesHandle 
+          ? codeforcesApi.getStats(currentUser.codeforcesHandle).catch(err => {
+              console.error('Error fetching Codeforces data:', err);
+              return null;
+            })
+          : Promise.resolve(null)
+      ]);
+
+      // Process LeetCode data
+      const leetCodeStats = leetcodeData?.data?.data || {};
+      const codeforcesStats = codeforcesData?.data?.data || {};
+
+      // Combine data from both platforms
+      const combinedStats = {
+        totalProblems: (leetCodeStats.totalSolved || 0) + (codeforcesStats.solvedCount || 0),
+        easy: (leetCodeStats.easySolved || 0) + (codeforcesStats.easySolved || 0),
+        medium: (leetCodeStats.mediumSolved || 0) + (codeforcesStats.mediumSolved || 0),
+        hard: (leetCodeStats.hardSolved || 0) + (codeforcesStats.hardSolved || 0),
+        rank: leetCodeStats.ranking || codeforcesStats.rank || 0,
+        rating: leetCodeStats.rating || codeforcesStats.rating || 0,
       };
-      
-      const mockActivity = [
-        { id: 1, problem: 'Two Sum', platform: 'LeetCode', date: '2023-10-20', difficulty: 'Easy' },
-        { id: 2, problem: 'Add Two Numbers', platform: 'LeetCode', date: '2023-10-19', difficulty: 'Medium' },
-        { id: 3, problem: 'Longest Substring Without Repeating Characters', platform: 'LeetCode', date: '2023-10-18', difficulty: 'Medium' },
-      ];
-      
+
+      // Get recent activity from both platforms
+      const leetCodeActivity = leetCodeStats.recentActivity?.map(activity => ({
+        ...activity,
+        platform: 'LeetCode'
+      })) || [];
+
+      const codeforcesActivity = codeforcesStats.recentSubmissions?.map(submission => ({
+        ...submission,
+        platform: 'Codeforces'
+      })) || [];
+
+      // Combine and sort activities by date (newest first)
+      const recentActivity = [...leetCodeActivity, ...codeforcesActivity]
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .slice(0, 10);
+
       setStats({
-        ...mockStats,
-        recentActivity: mockActivity,
-        loading: false
+        ...combinedStats,
+        recentActivity,
+        loading: false,
+        error: null
       });
       
     } catch (error) {
@@ -53,11 +84,12 @@ export const useProblemStats = () => {
         error: error.response?.data?.message || 'Failed to load problem statistics'
       }));
     }
-  };
+  }, [currentUser]);
 
+  // Initial fetch and refetch when currentUser changes
   useEffect(() => {
     fetchStats();
-  }, []);
+  }, [fetchStats]);
 
   const refetch = () => {
     fetchStats();
@@ -65,3 +97,5 @@ export const useProblemStats = () => {
 
   return { ...stats, refetch };
 };
+
+export default useProblemStats;

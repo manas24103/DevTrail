@@ -1,14 +1,14 @@
 import axios from 'axios';
 
 // Get the API URL from environment variables with fallback
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const API_BASE_URL = (process.env.REACT_APP_API_URL || 'http://localhost:5000').replace(/\/+$/, '');
 
-// Log the API URL for debugging (remove in production)
+// Log the API URL for debugging
 console.log('API Base URL:', API_BASE_URL);
 
 // Create axios instance with base URL
 const api = axios.create({
-  baseURL: `${API_BASE_URL}/api`,
+  baseURL: API_BASE_URL.endsWith('/api') ? API_BASE_URL : `${API_BASE_URL}/api`,
   headers: {
     'Content-Type': 'application/json',
   },

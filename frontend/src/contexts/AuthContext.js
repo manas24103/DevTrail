@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setError('');
       const response = await authApi.login(email, password);
-      const { token, user } = response.data.data;
+      const { token, data: user } = response.data;
       
       // Store the token in localStorage
       localStorage.setItem('token', token);
@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setError('');
       const response = await authApi.register(userData);
-      const { token, user } = response.data.data;
+      const { token, data: user } = response.data;
       
       // Store the token in localStorage
       localStorage.setItem('token', token);

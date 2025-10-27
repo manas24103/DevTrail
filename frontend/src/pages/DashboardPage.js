@@ -1,9 +1,32 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { FiLogOut, FiUser, FiAward, FiCode } from 'react-icons/fi';
+import { 
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend
+} from 'chart.js';
 import { Bar, Line } from 'react-chartjs-2';
 import { useProblemStats } from '../hooks/useProblemStats';
+
+// Register ChartJS components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 // Chart.js configuration
 const chartOptions = {
@@ -11,6 +34,7 @@ const chartOptions = {
   maintainAspectRatio: false,
   scales: {
     y: {
+      type: 'linear',
       beginAtZero: true,
       grid: {
         color: 'rgba(0, 0, 0, 0.05)',
@@ -46,14 +70,29 @@ const DashboardPage = () => {
     error,
     refetch 
   } = useProblemStats();
+  
+  // Cleanup chart instances on component unmount
+  useEffect(() => {
+    return () => {
+      // ChartJS.instances is an object where keys are chart IDs
+      // We need to get all chart instances and destroy them
+      if (ChartJS.instances) {
+        Object.values(ChartJS.instances).forEach(chart => {
+          if (chart && typeof chart.destroy === 'function') {
+            chart.destroy();
+          }
+        });
+      }
+    };
+  }, []);
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
-  // Chart data
-  const difficultyData = {
+  // Chart data with unique IDs for each chart instance
+  const difficultyData = React.useMemo(() => ({
     labels: ['Easy', 'Medium', 'Hard'],
     datasets: [
       {
@@ -72,31 +111,36 @@ const DashboardPage = () => {
         borderWidth: 1,
       },
     ],
-  };
+  }), [easy, medium, hard]);
 
   // Generate weekly progress data based on recent activity
-  const getWeeklyProgress = () => {
+  const getWeeklyProgress = React.useCallback(() => {
     const weeklyData = [0, 0, 0, 0]; // Last 4 weeks
     const now = new Date();
     
     recentActivity.forEach(activity => {
-      const activityDate = new Date(activity.date);
-      const weekDiff = Math.floor((now - activityDate) / (7 * 24 * 60 * 60 * 1000));
-      
-      if (weekDiff >= 0 && weekDiff < 4) {
-        weeklyData[3 - weekDiff]++;
+      if (!activity || !activity.date) return;
+      try {
+        const activityDate = new Date(activity.date);
+        const weekDiff = Math.floor((now - activityDate) / (7 * 24 * 60 * 60 * 1000));
+        
+        if (weekDiff >= 0 && weekDiff < 4) {
+          weeklyData[3 - weekDiff]++;
+        }
+      } catch (e) {
+        console.error('Error processing activity date:', e);
       }
     });
     
     // Ensure we have at least some data
-      if (weeklyData.every(val => val === 0)) {
-        return [5, 8, 12, 17]; // Fallback mock data
-      }
-      
+    if (weeklyData.every(val => val === 0)) {
+      return [5, 8, 12, 17]; // Fallback mock data
+    }
+    
     return weeklyData;
-  };
+  }, [recentActivity]);
 
-  const progressData = {
+  const progressData = React.useMemo(() => ({
     labels: ['Week 4', 'Week 3', 'Week 2', 'This Week'],
     datasets: [
       {
@@ -108,7 +152,7 @@ const DashboardPage = () => {
         tension: 0.4,
       },
     ],
-  };
+  }), [getWeeklyProgress]);
 
   if (loading) {
     return (

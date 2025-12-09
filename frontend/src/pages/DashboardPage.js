@@ -1,400 +1,285 @@
-import React, { useEffect } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { Link, useNavigate } from 'react-router-dom';
-import { FiLogOut, FiUser, FiAward, FiCode } from 'react-icons/fi';
-import { 
+// src/components/DashboardStats.js
+import React from 'react';
+import { Doughnut, Bar } from 'react-chartjs-2';
+import {
   Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
   CategoryScale,
   LinearScale,
   BarElement,
-  LineElement,
-  PointElement,
   Title,
-  Tooltip,
-  Legend
 } from 'chart.js';
-import { Bar, Line } from 'react-chartjs-2';
-import { useProblemStats } from '../hooks/useProblemStats';
 
-// Register ChartJS components
 ChartJS.register(
+  ArcElement,
+  Tooltip,
+  Legend,
   CategoryScale,
   LinearScale,
   BarElement,
-  LineElement,
-  PointElement,
-  Title,
-  Tooltip,
-  Legend
+  Title
 );
 
-// Chart.js configuration
-const chartOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
-  scales: {
-    y: {
-      type: 'linear',
-      beginAtZero: true,
-      grid: {
-        color: 'rgba(0, 0, 0, 0.05)',
-      },
-      ticks: {
-        stepSize: 1,
-      },
-    },
-    x: {
-      grid: {
-        display: false,
-      },
-    },
-  },
-  plugins: {
-    legend: {
-      display: false,
-    },
-  },
-};
+const DashboardStats = ({ stats, isLoading }) => {
+  const {
+    platformStats = { leetcode: null, codeforces: null },
+    totalProblems = 0,
+    easy = 0,
+    medium = 0,
+    hard = 0,
+  } = stats || {};
 
-const DashboardPage = () => {
-  const { currentUser, logout } = useAuth();
-  const navigate = useNavigate();
-  
-  console.log('Dashboard rendered with currentUser:', currentUser);
-  
-  const { 
-    totalProblems, 
-    easy, 
-    medium, 
-    hard, 
-    recentActivity, 
-    rank, 
-    loading, 
-    error,
-    refetch 
-  } = useProblemStats();
-  
-  // Debug log for stats
-  useEffect(() => {
-    console.log('Dashboard stats updated:', {
-      totalProblems,
-      easy,
-      medium,
-      hard,
-      recentActivity,
-      rank,
-      loading,
-      error
-    });
-  }, [totalProblems, easy, medium, hard, recentActivity, rank, loading, error]);
-  
-  // Cleanup chart instances on component unmount
-  useEffect(() => {
-    return () => {
-      // Clean up chart instances
-      if (difficultyChartRef.current) {
-        try {
-          difficultyChartRef.current.destroy();
-        } catch (e) {
-          console.warn('Error cleaning up difficulty chart:', e);
-        }
-      }
-      if (progressChartRef.current) {
-        try {
-          progressChartRef.current.destroy();
-        } catch (e) {
-          console.warn('Error cleaning up progress chart:', e);
-        }
-      }
-    };
-  }, []);
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-10 w-10 border-2 border-indigo-200 border-t-indigo-500" />
+      </div>
+    );
+  }
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
+  const leetcodeSolved = platformStats?.leetcode?.totalSolved || 0;
+  const cfSolved = platformStats?.codeforces?.solvedCount || 0;
 
-  // Chart refs
-  const difficultyChartRef = React.useRef(null);
-  const progressChartRef = React.useRef(null);
-  
-  // Chart data
-  const difficultyData = React.useMemo(() => ({
+  const hasDifficultyData = easy + medium + hard > 0;
+  const hasPlatformData = leetcodeSolved > 0 || cfSolved > 0;
+
+  const difficultyData = {
     labels: ['Easy', 'Medium', 'Hard'],
     datasets: [
       {
-        label: 'Problems Solved',
         data: [easy, medium, hard],
         backgroundColor: [
-          'rgba(75, 192, 192, 0.6)',
-          'rgba(255, 206, 86, 0.6)',
-          'rgba(255, 99, 132, 0.6)',
+          'rgba(34, 197, 94, 0.9)',
+          'rgba(245, 158, 11, 0.9)',
+          'rgba(239, 68, 68, 0.9)',
         ],
-        borderColor: [
-          'rgba(75, 192, 192, 1)',
-          'rgba(255, 206, 86, 1)',
-          'rgba(255, 99, 132, 1)',
-        ],
-        borderWidth: 1,
+        borderWidth: 0,
       },
     ],
-  }), [easy, medium, hard]);
+  };
 
-  // Generate weekly progress data based on recent activity
-  const getWeeklyProgress = React.useCallback(() => {
-    const weeklyData = [0, 0, 0, 0]; // Last 4 weeks
-    const now = new Date();
-    
-    recentActivity.forEach(activity => {
-      if (!activity || !activity.date) return;
-      try {
-        const activityDate = new Date(activity.date);
-        const weekDiff = Math.floor((now - activityDate) / (7 * 24 * 60 * 60 * 1000));
-        
-        if (weekDiff >= 0 && weekDiff < 4) {
-          weeklyData[3 - weekDiff]++;
-        }
-      } catch (e) {
-        console.error('Error processing activity date:', e);
-      }
-    });
-    
-    // Ensure we have at least some data
-    if (weeklyData.every(val => val === 0)) {
-      return [5, 8, 12, 17]; // Fallback mock data
-    }
-    
-    return weeklyData;
-  }, [recentActivity]);
-
-  const progressData = React.useMemo(() => ({
-    labels: ['Week 4', 'Week 3', 'Week 2', 'This Week'],
+  const platformData = {
+    labels: ['LeetCode', 'Codeforces'],
     datasets: [
       {
         label: 'Problems Solved',
-        data: getWeeklyProgress(),
-        fill: false,
-        backgroundColor: 'rgba(59, 130, 246, 0.6)',
-        borderColor: 'rgba(59, 130, 246, 1)',
-        tension: 0.4,
+        data: [leetcodeSolved, cfSolved],
+        backgroundColor: [
+          'rgba(79, 70, 229, 0.9)',
+          'rgba(59, 130, 246, 0.9)',
+        ],
+        borderRadius: 8,
+        borderWidth: 0,
       },
     ],
-  }), [getWeeklyProgress]);
+  };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
-  
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-500 mb-4">{error}</p>
-          <button
-            onClick={refetch}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            Retry
-          </button>
-        </div>
-      </div>
-    );
-  }
+  const weakAreas = [
+    { topic: 'Dynamic Programming', score: 62 },
+    { topic: 'Graphs', score: 55 },
+    { topic: 'Greedy', score: 70 },
+    { topic: 'Math', score: 68 },
+    { topic: 'Strings', score: 74 },
+    { topic: 'Arrays', score: 80 },
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">DevTrail</h1>
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={handleLogout}
-              className="flex items-center text-gray-600 hover:text-gray-900"
-            >
-              <FiLogOut className="mr-1" />
-              <span>Logout</span>
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome Section */}
-        <div className="bg-white shadow rounded-lg p-6 mb-8">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">
-                Welcome back, {currentUser?.username || 'Coder'}! 👋
-              </h2>
-              <p className="text-gray-600 mt-1">
-                Keep up the great work! Here's your coding progress so far.
-              </p>
-            </div>
-            <div className="mt-4 md:mt-0
-            ">
-              <Link
-                to="/profile"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                <FiUser className="mr-2" />
-                View Profile
-              </Link>
-            </div>
+    <section className="w-full bg-slate-50/80">
+      <div className="max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-8 space-y-8">
+        {/* Header */}
+        <div className="flex flex-col gap-1 md:flex-row md:items-end md:justify-between">
+          <div>
+            <h2 className="text-2xl md:text-3xl font-semibold text-slate-900">
+              Dashboard Overview
+            </h2>
+            <p className="text-sm md:text-base text-slate-500">
+              A quick snapshot of your coding journey across platforms.
+            </p>
           </div>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="p-3 rounded-full bg-blue-100 text-blue-600">
-                <FiAward className="h-6 w-6" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Total Problems</p>
-                <p className="text-2xl font-semibold text-gray-900">{totalProblems}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="p-3 rounded-full bg-green-100 text-green-600">
-                <FiCode className="h-6 w-6" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Easy</p>
-                <p className="text-2xl font-semibold text-gray-900">#{rank}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="p-3 rounded-full bg-yellow-100 text-yellow-600">
-                <FiCode className="h-6 w-6" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Medium</p>
-                <p className="text-2xl font-semibold text-gray-900">{medium}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="p-3 rounded-full bg-red-100 text-red-600">
-                <FiCode className="h-6 w-6" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Hard</p>
-                <p className="text-2xl font-semibold text-gray-900">{hard}</p>
-              </div>
-            </div>
-          </div>
+        {/* Stat cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
+          <StatCard
+            title="Total Problems Solved"
+            value={totalProblems}
+            icon="📊"
+            accent="border-indigo-100 bg-indigo-50 text-indigo-600"
+          />
+          <StatCard
+            title="Easy"
+            value={easy}
+            icon="✅"
+            accent="border-emerald-100 bg-emerald-50 text-emerald-600"
+          />
+          <StatCard
+            title="Medium"
+            value={medium}
+            icon="⚠️"
+            accent="border-amber-100 bg-amber-50 text-amber-600"
+          />
+          <StatCard
+            title="Hard"
+            value={hard}
+            icon="🔥"
+            accent="border-rose-100 bg-rose-50 text-rose-600"
+          />
         </div>
 
         {/* Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Problems by Difficulty</h3>
-            <div className="h-64">
-              <Bar 
-                data={difficultyData} 
-                options={chartOptions} 
-                ref={(node) => {
-                  if (node) {
-                    difficultyChartRef.current = node;
-                  }
-                }}
-              />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Difficulty chart */}
+          <div className="bg-white border border-slate-100 rounded-2xl shadow-sm p-6">
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold text-slate-900">
+                Difficulty Distribution
+              </h3>
+              <p className="text-sm text-slate-500">
+                How your solved problems are spread across difficulty levels.
+              </p>
+            </div>
+            <div className="h-64 flex items-center justify-center">
+              {hasDifficultyData ? (
+                <Doughnut
+                  data={difficultyData}
+                  options={{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                      legend: {
+                        position: 'bottom',
+                        labels: {
+                          boxWidth: 12,
+                          padding: 14,
+                        },
+                      },
+                    },
+                    cutout: '60%',
+                  }}
+                />
+              ) : (
+                <EmptyState
+                  title="No problems solved yet"
+                  subtitle="Start solving on LeetCode or Codeforces to see your difficulty breakdown here."
+                />
+              )}
             </div>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Weekly Progress</h3>
-            <div className="h-64">
-              <Line 
-                data={progressData} 
-                options={chartOptions} 
-                ref={(node) => {
-                  if (node) {
-                    progressChartRef.current = node;
-                  }
-                }}
-              />
+
+          {/* Platform chart */}
+          <div className="bg-white border border-slate-100 rounded-2xl shadow-sm p-6">
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold text-slate-900">
+                Platform Comparison
+              </h3>
+              <p className="text-sm text-slate-500">
+                Compare your progress across LeetCode and Codeforces.
+              </p>
+            </div>
+            <div className="h-64 flex items-center justify-center">
+              {hasPlatformData ? (
+                <Bar
+                  data={platformData}
+                  options={{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                      x: {
+                        grid: { display: false },
+                      },
+                      y: {
+                        beginAtZero: true,
+                        grid: { color: '#E5E7EB' },
+                      },
+                    },
+                    plugins: {
+                      legend: { display: false },
+                    },
+                  }}
+                />
+              ) : (
+                <EmptyState
+                  title="No platform data connected"
+                  subtitle="Connect your accounts to see how you perform on each platform."
+                />
+              )}
             </div>
           </div>
         </div>
 
-        {/* Recent Activity */}
-        <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-          <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
-            <h3 className="text-lg leading-6 font-medium text-gray-900">Recent Activity</h3>
-            <p className="mt-1 max-w-2xl text-sm text-gray-500">Your recent problem-solving activity</p>
+        {/* Focus areas */}
+        <div className="bg-white border border-slate-100 rounded-2xl shadow-sm p-6">
+          <div className="mb-4 flex flex-col gap-1 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900">
+                Focus Areas
+              </h3>
+              <p className="text-sm text-slate-500">
+                Topics where you can improve next. Use this to plan your
+                practice.
+              </p>
+            </div>
           </div>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Problem
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Platform
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Difficulty
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Date
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {recentActivity.map((activity) => (
-                  <tr key={activity.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {activity.problem}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {activity.platform}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        activity.difficulty === 'Easy' 
-                          ? 'bg-green-100 text-green-800' 
-                          : activity.difficulty === 'Medium' 
-                            ? 'bg-yellow-100 text-yellow-800' 
-                            : 'bg-red-100 text-red-800'
-                      }`}>
-                        {activity.difficulty}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {activity.date}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </main>
 
-      <footer className="bg-white mt-12 border-t border-gray-200">
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-          <p className="text-center text-sm text-gray-500">
-            &copy; {new Date().getFullYear()} DevTrail. All rights reserved.
-          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {weakAreas.map(({ topic, score }) => (
+              <div
+                key={topic}
+                className="rounded-xl border border-slate-100 bg-slate-50/60 p-3 md:p-4"
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-semibold text-slate-800">
+                    {topic}
+                  </span>
+                  <span className="text-xs font-semibold text-indigo-600">
+                    {score}% mastery
+                  </span>
+                </div>
+                <div className="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
+                  <div
+                    className="h-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-blue-500"
+                    style={{ width: `${score}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-      </footer>
-    </div>
+      </div>
+    </section>
   );
 };
 
-export default DashboardPage;
+const StatCard = ({ title, value, icon, accent }) => (
+  <div className="bg-white/90 border border-slate-100 rounded-2xl shadow-sm p-4 md:p-5 transition hover:shadow-md">
+    <div className="flex items-center justify-between gap-3">
+      <div className="space-y-1">
+        <p className="text-[11px] font-semibold tracking-wide text-slate-400 uppercase">
+          {title}
+        </p>
+        <p className="text-2xl md:text-3xl font-semibold text-slate-900">
+          {value}
+        </p>
+      </div>
+      <div
+        className={`flex h-11 w-11 items-center justify-center rounded-full ${accent}`}
+      >
+        <span className="text-xl">{icon}</span>
+      </div>
+    </div>
+  </div>
+);
+
+const EmptyState = ({ title, subtitle }) => (
+  <div className="text-center max-w-xs mx-auto">
+    <div className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-indigo-50 text-indigo-500 mb-3">
+      📉
+    </div>
+    <p className="text-sm font-semibold text-slate-900">{title}</p>
+    <p className="text-xs text-slate-500 mt-1">{subtitle}</p>
+  </div>
+);
+
+export default DashboardStats;

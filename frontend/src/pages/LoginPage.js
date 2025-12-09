@@ -5,7 +5,6 @@ import { useAuth } from '../contexts/AuthContext';
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [userType, setUserType] = useState('doctor');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
@@ -89,19 +88,6 @@ const LoginPage = () => {
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">I am a</label>
-              <select
-                value={userType}
-                onChange={(e) => setUserType(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="doctor">Doctor</option>
-                <option value="admin">Admin</option>
-                <option value="staff">Staff</option>
-              </select>
-            </div>
-
-            <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                 Email
               </label>
@@ -166,8 +152,8 @@ const LoginPage = () => {
           <div className="mt-6 text-center text-sm">
             <p className="text-gray-600">
               Don't have an account?{' '}
-              <Link to="/contact-admin" className="font-medium text-blue-600 hover:text-blue-500">
-                Contact administrator
+              <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500">
+                Create an account
               </Link>
             </p>
             <div className="mt-4">

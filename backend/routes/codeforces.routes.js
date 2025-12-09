@@ -1,8 +1,11 @@
 import { Router } from 'express';
-const router = Router();
 import codeforcesController from '../controllers/codeforces.Controller.js';
 
-router.get('/:username', codeforcesController.getCodeforcesData);
-router.get('/rateLimit', codeforcesController.checkRateLimit);
-router.get('/generateApiSignature', codeforcesController.generateApiSignature);
+const router = Router();
+
+// User data endpoints
+router.get('/info/:handle', codeforcesController.getUserInfo);
+router.get('/rating/:handle', codeforcesController.getUserRating);
+router.get('/submissions/:handle', codeforcesController.getUserSubmissions);
+
 export default router;

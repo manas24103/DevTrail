@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { authApi } from '../services/api';
+import { authApi, api } from '../services/api';
 
 const AuthContext = createContext();
 
@@ -25,8 +25,8 @@ export const AuthProvider = ({ children }) => {
   // Fetch user profile
   const fetchUserProfile = async () => {
     try {
-      const response = await authApi.getProfile();
-      setCurrentUser(response.data.data);
+      const response = await api.get('/users/me');
+      setCurrentUser(response.data);
     } catch (err) {
       console.error('Error fetching user profile:', err);
       if (err.response?.status === 401) {

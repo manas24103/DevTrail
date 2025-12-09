@@ -59,6 +59,9 @@ const chartOptions = {
 const DashboardPage = () => {
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
+  
+  console.log('Dashboard rendered with currentUser:', currentUser);
+  
   const { 
     totalProblems, 
     easy, 
@@ -71,17 +74,37 @@ const DashboardPage = () => {
     refetch 
   } = useProblemStats();
   
+  // Debug log for stats
+  useEffect(() => {
+    console.log('Dashboard stats updated:', {
+      totalProblems,
+      easy,
+      medium,
+      hard,
+      recentActivity,
+      rank,
+      loading,
+      error
+    });
+  }, [totalProblems, easy, medium, hard, recentActivity, rank, loading, error]);
+  
   // Cleanup chart instances on component unmount
   useEffect(() => {
     return () => {
-      // ChartJS.instances is an object where keys are chart IDs
-      // We need to get all chart instances and destroy them
-      if (ChartJS.instances) {
-        Object.values(ChartJS.instances).forEach(chart => {
-          if (chart && typeof chart.destroy === 'function') {
-            chart.destroy();
-          }
-        });
+      // Clean up chart instances
+      if (difficultyChartRef.current) {
+        try {
+          difficultyChartRef.current.destroy();
+        } catch (e) {
+          console.warn('Error cleaning up difficulty chart:', e);
+        }
+      }
+      if (progressChartRef.current) {
+        try {
+          progressChartRef.current.destroy();
+        } catch (e) {
+          console.warn('Error cleaning up progress chart:', e);
+        }
       }
     };
   }, []);
@@ -91,7 +114,11 @@ const DashboardPage = () => {
     navigate('/login');
   };
 
-  // Chart data with unique IDs for each chart instance
+  // Chart refs
+  const difficultyChartRef = React.useRef(null);
+  const progressChartRef = React.useRef(null);
+  
+  // Chart data
   const difficultyData = React.useMemo(() => ({
     labels: ['Easy', 'Medium', 'Hard'],
     datasets: [
@@ -277,13 +304,29 @@ const DashboardPage = () => {
           <div className="bg-white p-6 rounded-lg shadow">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Problems by Difficulty</h3>
             <div className="h-64">
-              <Bar data={difficultyData} options={chartOptions} />
+              <Bar 
+                data={difficultyData} 
+                options={chartOptions} 
+                ref={(node) => {
+                  if (node) {
+                    difficultyChartRef.current = node;
+                  }
+                }}
+              />
             </div>
           </div>
           <div className="bg-white p-6 rounded-lg shadow">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Weekly Progress</h3>
             <div className="h-64">
-              <Line data={progressData} options={chartOptions} />
+              <Line 
+                data={progressData} 
+                options={chartOptions} 
+                ref={(node) => {
+                  if (node) {
+                    progressChartRef.current = node;
+                  }
+                }}
+              />
             </div>
           </div>
         </div>

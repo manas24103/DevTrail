@@ -41,24 +41,12 @@ const makeRequest = async (endpoint, params = {}) => {
 const getUserProfile = async (req, res) => {
   try {
     const { username } = req.params;
-    if (!username) {
-      return res.status(400).json({ 
-        status: 'error', 
-        message: 'Username is required' 
-      });
-    }
+    if (!username) return res.status(400).json({ message: 'Username is required' });
 
     const data = await makeRequest(`/${username}`);
-    res.json({
-      status: 'success',
-      data
-    });
+    res.json(data);
   } catch (error) {
-    console.error('Error in getUserProfile:', error);
-    res.status(500).json({ 
-      status: 'error', 
-      message: error.message 
-    });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -66,6 +54,7 @@ const getUserProfile = async (req, res) => {
 const getUserSolvedProblems = async (req, res) => {
   try {
     const { username } = req.params;
+    if (!username) return res.status(400).json({ message: 'Username is required' });
     if (!username) {
       return res.status(400).json({ 
         status: 'error', 

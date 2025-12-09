@@ -4,6 +4,22 @@ import User from '../models/User.models.js';
 
 const router = Router();
 
+// @route   GET /api/users/me
+// @desc    Get current user's profile
+// @access  Private
+router.get('/me', protect, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('-password');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json(user);
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // @route   PUT /api/users/profile
 // @desc    Update user profile
 // @access  Private

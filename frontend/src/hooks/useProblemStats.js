@@ -58,14 +58,24 @@ const processCodeforcesData = (data) => {
 // Helper function to fetch with retry
 const fetchWithRetry = async (url, options = {}, retries = MAX_RETRIES) => {
   try {
+    console.log(`Fetching ${url}...`);
     const response = await api.get(url, { ...options, signal: options.signal });
+    console.log(`Successfully fetched ${url}`, response.data);
     return response.data;
   } catch (error) {
+    if (axios.isCancel?.(error) || error.code === 'ERR_CANCELED') {
+      console.log(`Request to ${url} was cancelled`);
+      throw error;
+    }
+    
     if (retries > 0) {
+      console.log(`Error fetching ${url}:`, error.response?.data || error.message);
       console.log(`Retrying ${url}... (${retries} attempts left)`);
       await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
       return fetchWithRetry(url, options, retries - 1);
     }
+    
+    console.error(`Failed to fetch ${url} after ${MAX_RETRIES} attempts:`, error.response?.data || error.message);
     throw error;
   }
 };
@@ -102,10 +112,22 @@ export const useProblemStats = () => {
 
     console.log('fetchStats called with currentUser:', currentUser);
     
-    if ((!currentUser?.leetcodeHandle || !currentUser.leetcodeHandle.trim()) && 
-        (!currentUser?.codeforcesHandle || !currentUser.codeforcesHandle.trim())) {
-      console.log('No valid handles found, skipping fetch');
-      setStats(prev => ({ ...prev, loading: false }));
+    // Check if user has any coding platform handles
+    const hasLeetCodeHandle = currentUser?.leetcodeHandle?.trim();
+    const hasCodeforcesHandle = currentUser?.codeforcesHandle?.trim();
+    
+    console.log('Handles found:', { 
+      leetcode: hasLeetCodeHandle, 
+      codeforces: hasCodeforcesHandle 
+    });
+    
+    if (!hasLeetCodeHandle && !hasCodeforcesHandle) {
+      console.log('No valid coding platform handles found in user profile');
+      setStats(prev => ({
+        ...prev,
+        loading: false,
+        error: new Error('No coding platform handles found in your profile. Please update your profile with your LeetCode and/or Codeforces handles.')
+      }));
       return;
     }
 
@@ -124,8 +146,8 @@ export const useProblemStats = () => {
         loading: true, 
         error: null,
         platformStats: {
-          leetcode: prev.platformStats.leetcode ? { ...prev.platformStats.leetcode, loading: true } : null,
-          codeforces: prev.platformStats.codeforces ? { ...prev.platformStats.codeforces, loading: true } : null
+          leetcode: prev.platformStats?.leetcode ? { ...prev.platformStats.leetcode, loading: true } : null,
+          codeforces: prev.platformStats?.codeforces ? { ...prev.platformStats.codeforces, loading: true } : null
         }
       }));
       
@@ -144,58 +166,73 @@ export const useProblemStats = () => {
       const fetchPromises = [];
       
       // Fetch LeetCode data if not in cache or expired
-      if (currentUser?.leetcodeHandle && !useLeetCodeCache) {
-        fetchPromises.push(
-          Promise.all([
-            fetchWithRetry(`/leetcode/${currentUser.leetcodeHandle}`, { signal: controller.signal })
-              .then(profile => {
-                if (!isMounted.current) return null;
-                cache.leetCode[leetcodeKey] = { profile, timestamp: Date.now() };
-                return profile;
-              })
-              .catch(err => {
-                console.error('Error fetching LeetCode profile:', err);
-                return null;
-              }),
-            fetchWithRetry(`/leetcode/${currentUser.leetcodeHandle}/solved`, { signal: controller.signal })
-              .then(solved => {
-                if (!isMounted.current) return null;
-                return solved;
-              })
-              .catch(err => {
-                console.error('Error fetching LeetCode solved problems:', err);
-                return null;
-              })
-          ])
-        );
-      } else if (currentUser?.leetcodeHandle) {
-        // Use cached data
-        fetchPromises.push(Promise.resolve([
-          cache.leetCode[leetcodeKey].profile,
-          cache.leetCode[leetcodeKey].solved
-        ]));
+      if (currentUser?.leetcodeHandle) {
+        if (!useLeetCodeCache) {
+          fetchPromises.push(
+            (async () => {
+              try {
+                console.log('Fetching LeetCode data...');
+                const [profile, solved] = await Promise.all([
+                  fetchWithRetry(`/leetcode/${currentUser.leetcodeHandle}`, { signal: controller.signal }),
+                  fetchWithRetry(`/leetcode/${currentUser.leetcodeHandle}/solved`, { signal: controller.signal })
+                ]);
+
+                if (!isMounted.current) return [null, null];
+                
+                // Cache the successful response
+                cache.leetCode[leetcodeKey] = { profile, solved, timestamp: Date.now() };
+                cache.lastUpdated.leetcode = Date.now();
+                
+                return [profile, solved];
+              } catch (error) {
+                console.error('Error fetching LeetCode data:', error);
+                return [null, null];
+              }
+            })()
+          );
+        } else {
+          // Use cached data
+          console.log('Using cached LeetCode data');
+          fetchPromises.push(Promise.resolve([
+            cache.leetCode[leetcodeKey]?.profile || null,
+            cache.leetCode[leetcodeKey]?.solved || null
+          ]));
+        }
       } else {
         fetchPromises.push(Promise.resolve([null, null]));
       }
 
       // Fetch Codeforces data if not in cache or expired
-      if (currentUser?.codeforcesHandle && !useCodeforcesCache) {
-        fetchPromises.push(
-          fetchWithRetry(`/codeforces/info/${currentUser.codeforcesHandle}`, { signal: controller.signal })
-            .then(data => {
-              if (!isMounted.current) return null;
-              cache.codeforces[codeforcesKey] = { ...data, timestamp: Date.now() };
-              cache.lastUpdated.codeforces = Date.now();
-              return data;
-            })
-            .catch(err => {
-              console.error('Error fetching Codeforces data:', err);
-              return null;
-            })
-        );
-      } else if (currentUser?.codeforcesHandle) {
-        // Use cached data
-        fetchPromises.push(Promise.resolve(cache.codeforces[codeforcesKey]));
+      if (currentUser?.codeforcesHandle) {
+        if (!useCodeforcesCache) {
+          fetchPromises.push(
+            (async () => {
+              try {
+                console.log('Fetching Codeforces data...');
+                const codeforcesData = await fetchWithRetry(
+                  `/codeforces/user/${currentUser.codeforcesHandle}`,
+                  { signal: controller.signal }
+                );
+
+                if (!isMounted.current) return null;
+                
+                // Cache the successful response
+                cache.codeforces[codeforcesKey] = { ...codeforcesData, timestamp: Date.now() };
+                cache.lastUpdated.codeforces = Date.now();
+                
+                console.log('Codeforces data received:', codeforcesData);
+                return codeforcesData;
+              } catch (error) {
+                console.error('Error fetching Codeforces data:', error);
+                return null;
+              }
+            })()
+          );
+        } else {
+          // Use cached data
+          console.log('Using cached Codeforces data');
+          fetchPromises.push(Promise.resolve(cache.codeforces[codeforcesKey] || null));
+        }
       } else {
         fetchPromises.push(Promise.resolve(null));
       }
@@ -255,8 +292,15 @@ export const useProblemStats = () => {
   }, [currentUser]);
 
   useEffect(() => {
+    console.log('useEffect in useProblemStats triggered');
+    console.log('Current user in effect:', currentUser);
     fetchStats();
-  }, [fetchStats]);
+    
+    // Set up a refetch interval (e.g., every 5 minutes)
+    const intervalId = setInterval(fetchStats, 5 * 60 * 1000);
+    
+    return () => clearInterval(intervalId);
+  }, [fetchStats, currentUser]);
 
   // Return stats with refetch function (using refetch to match DashboardPage's expectation)
   return { ...stats, refetch: fetchStats };

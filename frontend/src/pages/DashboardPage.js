@@ -1,6 +1,6 @@
-// src/components/DashboardStats.js
 import React from 'react';
 import { Doughnut, Bar } from 'react-chartjs-2';
+import { useProblemStats } from '../hooks/useProblemStats';
 import {
   Chart as ChartJS,
   ArcElement,
@@ -21,6 +21,21 @@ ChartJS.register(
   BarElement,
   Title
 );
+
+const DashboardPage = () => {
+  const { stats, loading: isLoading, error } = useProblemStats();
+  
+  // If there's an error, show an error message
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="text-red-500">Error loading dashboard data: {error.message}</div>
+      </div>
+    );
+  }
+
+  return <DashboardStats stats={stats} isLoading={isLoading} />;
+};
 
 const DashboardStats = ({ stats, isLoading }) => {
   const {
@@ -282,4 +297,4 @@ const EmptyState = ({ title, subtitle }) => (
   </div>
 );
 
-export default DashboardStats;
+export default DashboardPage;

@@ -1,17 +1,12 @@
-import { Router } from 'express';
-import leetcodeController from '../controllers/leetcode.Controller.js';
+import express from "express";
+import leetcodeController from "../controllers/leetcodeService.js";
 
-const router = Router();
+const router = express.Router();
 
-// User profile & solved problems
-router.get('/:username', leetcodeController.getUserProfile);
-router.get('/:username/solved', leetcodeController.getUserSolvedProblems);
-router.get('/:username/contest/history', leetcodeController.getUserContestHistory);
-router.get('/:username/submissions', leetcodeController.getUserSubmissionCalendar);
+// GET /api/leetcode/user/:username
+router.get("/user/:username", leetcodeController.getUserProfile);
 
-// Daily challenge and problem data
-router.get('/daily', leetcodeController.getDailyChallenge);
-router.get('/problems', leetcodeController.getProblems);
-router.get('/problem/:titleSlug', leetcodeController.getProblemBySlug);
+// GET /api/leetcode/user/:username/solved
+router.get("/user/:username/solved", leetcodeController.getUserSolvedProblems);
 
 export default router;

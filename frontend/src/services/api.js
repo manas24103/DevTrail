@@ -40,10 +40,11 @@ export const leetcodeApi = {
 };
 
 // ---------------- CODEFORCES (via backend) ----------------
+// Updated to match backend routes in backend/routes/codeforces.routes.js
 export const codeforcesApi = {
-  getStats: (handle) => api.get(`/codeforces/${handle}`),
-  getContests: () => api.get('/codeforces/contests'),
-  getSubmissions: (handle) => api.get(`/codeforces/submissions/${handle}`),
+  getStats: (handle) => api.get(`/codeforces/user/${handle}`),
+  getUserRating: (handle) => api.get(`/codeforces/rating/${handle}`),
+  getSubmissions: (handle, count = 50) => api.get(`/codeforces/submissions/${handle}`, { params: { count } }),
 };
 
 // ---------------- LEADERBOARD ----------------

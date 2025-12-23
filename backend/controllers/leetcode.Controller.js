@@ -1,4 +1,4 @@
-import { getLeetCodeStats } from "../services/leetcode.service.js";
+import { getLeetcodeStats } from "../services/leetcode.services.js";
 import {asyncHandler} from "../utils/asyncHandler.js";
 
 export const getLeetCodeDashboard = asyncHandler(async (req, res) => {
@@ -10,7 +10,7 @@ export const getLeetCodeDashboard = asyncHandler(async (req, res) => {
   }
 
   const { stats, recentSolved } =
-    await getLeetCodeStats(req.user._id, username);
+    await getLeetcodeStats(req.user._id, username);
 
   const start = (page - 1) * limit;
 

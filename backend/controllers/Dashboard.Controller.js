@@ -1,4 +1,4 @@
-import { PlatformStats } from "../models/platformStats.model.js";
+import { PlatformStats } from "../models/platformStats.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 

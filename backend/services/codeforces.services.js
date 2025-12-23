@@ -1,5 +1,5 @@
-import { PlatformStats } from "../models/platformstats.js";
-import { cfRequest } from "../utils/cfClient.js";
+import { PlatformStats } from "../models/platformStats.js";
+import { cfRequest } from "../utils/cfClinet.js";
 
 const mapCfDifficulty = (rating) => {
   if (!rating) return null;

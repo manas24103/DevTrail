@@ -23,6 +23,7 @@
     "limiter": "^3.0.0",
     "mongoose": "^8.19.2",
     "node": "^24.12.0",
+    "nodemailer": "^7.0.12",
     "path-to-regexp": "^6.2.0"
   },
   "devDependencies": {

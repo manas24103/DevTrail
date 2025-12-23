@@ -9,7 +9,7 @@ export const LeetcodeClient =axios.create({
     }
 });
 
-export default leetcodeRequest=async (query,variables={}) => {
+export const leetcodeRequest=async (query,variables={}) => {
     const res=await LeetcodeClient.post("",{
         query,
         variables

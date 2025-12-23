@@ -1,5 +1,5 @@
-import { getCodeforcesStats } from "../services/codeforces.service.js";
-
+import { getCodeforcesStats } from "../services/codeforces.services.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 export const getCodeforcesDashboard = asyncHandler(async (req, res) => {
   const { page = 1, limit = 5 } = req.query;
   const { codeforces: handle } = req.user.handles;

@@ -2,7 +2,7 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import setupCors from "./config/cors.js";
 
-import authRoutes from "./routes/auth.routes.js";
+import userRoutes from "./routes/user.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
 import leetcodeRoutes from "./routes/leetcode.routes.js";
 import codeforcesRoutes from "./routes/codeforces.routes.js";
@@ -18,7 +18,7 @@ app.use(cookieParser());
 setupCors(app);
 
 // routes
-app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/auth", userRoutes);
 app.use("/api/v1/dashboard", dashboardRoutes);
 app.use("/api/v1/leetcode", leetcodeRoutes);
 app.use("/api/v1/codeforces", codeforcesRoutes);

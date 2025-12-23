@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { getCodeforcesDashboard } from '../controllers/codeforces.Controller.js';
-import { verifyJWT } from '../middlewares/auth.middleware.js';
+import { verifyJWT } from '../middleware/auth.middleware.js';
 
 const codeforcesRouter = Router();
 

@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { getAngleFromPoint } from 'chart.js/helpers';
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -119,5 +118,4 @@ userSchema.methods.generateRefreshToken = function(){
     )
 }
 
-const User = mongoose.model('User', userSchema);
-export default User;
+export const User = mongoose.model('User', userSchema);

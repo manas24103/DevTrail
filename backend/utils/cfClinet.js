@@ -14,5 +14,3 @@ export const cfRequest = async (endpoint, params) => {
 
   return res.data.result;
 };
-
-export default cfClient;

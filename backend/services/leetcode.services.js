@@ -1,6 +1,6 @@
-import {PlatformStats} from "../models/platformstats"
-import {leetcodeRequest} from "../utils/leetcodeClient";
-import {Leetcode_Dashboard_Query} from "../utils/GQLQueries";
+import {PlatformStats} from "../models/platformStats.js";
+import {leetcodeRequest} from "../utils/leetcodeClient.js";
+import {Leetcode_Dashboard_Query} from "../utils/GQLQueries.js";
 
 export const getLeetcodeStats = async (userId,username) => {
     const cached=await PlatformStats.findOne({

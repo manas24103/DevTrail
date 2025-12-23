@@ -1,11 +1,9 @@
 import { Router } from 'express';
-import {
-    getLeetCodeDashboard
-} from '../controllers/leetcode.Controller.js';
+import { getDashboard } from '../controllers/Dashboard.Controller.js';
 import { verifyJWT } from '../middlewares/auth.middleware.js';
 
 const router = Router();
 
-router.route('/stats').get(verifyJWT, getLeetCodeDashboard);
+router.route('/').get(verifyJWT, getDashboard);
 
 export default router;

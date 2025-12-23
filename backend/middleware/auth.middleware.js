@@ -1,71 +1,27 @@
-import jwtPkg from 'jsonwebtoken';
-const { verify, TokenExpiredError } = jwtPkg;
-import User from '../models/User.models.js';
+import { ApiError } from "../utils/ApiError.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import jwt from 'jsonwebtoken';
+import { User } from "../models/User.models.js";
 
-// authentication middleware to verify jwt token 
-export async function authenticate(req,res,next) {
-    try {
-      const authHeader=req.header('authorization');
-
-      if(!authHeader){
-        return res.status(401).json({
-          success:false,
-          message:'Unauthorized'
-        });
-      }
-
-      if(!authHeader.startsWith('Bearer ')){
-        return res.status(401).json({
-          success:false,
-          message:'Invalid token'
-        });
-      }
-
-      const token=authHeader.split(' ')[1];
-
-      if(!process.env.JWT_SECRET){
-        return res.status(500).json({
-          success:false,
-          message:'Internal server error'
-        });
-      }
-
-      try{
-        const decoded =verify(token,process.env.JWT_SECRET);
-        console.log('Token decoded',decoded);
+export const verifyJWT = asyncHandler(async (req, res, next) => {
+    try{
+      const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
+      if(!token){
+        throw new ApiError(401, "Unauthorized request")
         
-        const user=await User.findById(decoded.id);
-        if(!user){
-          return res.status(401).json({
-            success:false,
-            message:'User not found'
-          });
-        }
-
-        req.user=user.toObject();
-        next();
       }
-     catch (error) {
-      console.error('Authentication failed',error);
-
-      if(error instanceof TokenExpiredError){
-        return res.status(401).json({
-          success:false,
-          message:'Token expired'
-        });
+      
+      const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+      
+      const user = await User.findById(decodedToken._id).select("-password -refreshToken");
+      
+      if(!user){
+        throw new ApiError(401, "Invalid access token");
       }
-
-      return res.status(401).json({
-        success:false,
-        message:'Invalid token'
-      });
+      
+      req.user = user;
+      next();
+    } catch (error) {
+      throw new ApiError(401, error?.message || "Invalid access token");
     }
-  }
-  catch(error) {
-    console.error('Authentication failed',error);
-    return res.status(500).json({
-      success:false,
-      message:'Internal server error'
-    });
-  } 
-}
+});

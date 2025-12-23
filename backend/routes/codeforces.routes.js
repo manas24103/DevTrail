@@ -1,22 +1,9 @@
 import { Router } from 'express';
-import codeforcesController from '../controllers/codeforces.Controller.js';
+import { getCodeforcesDashboard } from '../controllers/codeforces.Controller.js';
+import { verifyJWT } from '../middlewares/auth.middleware.js';
 
-const router = Router();
+const codeforcesRouter = Router();
 
-// User data endpoints
-router.get('/user/:handle', (req, res, next) => {
-  console.log(`[DEBUG] Handling Codeforces user info request for handle: ${req.params.handle}`);
-  codeforcesController.getUserInfo(req, res).catch(next);
-});
+codeforcesRouter.route('/stats').get(verifyJWT, getCodeforcesDashboard);
 
-router.get('/rating/:handle', (req, res, next) => {
-  console.log(`[DEBUG] Handling Codeforces rating request for handle: ${req.params.handle}`);
-  codeforcesController.getUserRating(req, res).catch(next);
-});
-
-router.get('/submissions/:handle', (req, res, next) => {
-  console.log(`[DEBUG] Handling Codeforces submissions request for handle: ${req.params.handle}, count: ${req.query.count || 'not specified'}`);
-  codeforcesController.getUserSubmissions(req, res).catch(next);
-});
-
-export default router;
+export default codeforcesRouter;

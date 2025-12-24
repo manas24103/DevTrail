@@ -1,61 +1,89 @@
-import {PlatformStats} from "../models/platformStats.js";
-import {leetcodeRequest} from "../utils/leetcodeClient.js";
-import {Leetcode_Dashboard_Query} from "../utils/GQLQueries.js";
+import { PlatformStats } from "../models/platformStats.js";
+import { leetcodeRequest } from "../utils/leetcodeClient.js";
+import { USER_CONTEST_RANKING_INFO_QUERY, USER_QUESTION_PROGRESS_QUERY , RECENT_AC_SUBMISSIONS_QUERY} from "../utils/GQLQueries.js";
 
-export const getLeetcodeStats = async (userId,username) => {
-    const cached=await PlatformStats.findOne({
-        userId,
-        platform:"leetcode"
-    })
-    if(cached && Date.now() - cached.lastUpdated<6*60*60*1000){
-        return {stats:cached,recentsolved:[]};
-    }
+export const getLeetcodeStats = async (userId, username) => {
+  // 1️⃣ Check cache (6 hours)
+  const cached = await PlatformStats.findOne({
+    userId,
+    platform: "leetcode",
+  });
 
-    const data=await leetcodeRequest(
-        Leetcode_Dashboard_Query,
-        { username}
-    )
+  if (
+    cached &&
+    cached.lastUpdated &&
+    Date.now() - cached.lastUpdated.getTime() < 6 * 60 * 60 * 1000
+  ) {
+    return {
+      stats: cached,
+      recentSolved: [],
+    };
+  }
 
-    const user=data?.matchedUser;
-    if(!user){
-        throw new Error("Invalid Leetcode username");
-    }
+   // 2️⃣ Fetch difficulty stats
+  const ProgressData = await leetcodeRequest(
+    USER_QUESTION_PROGRESS_QUERY,
+    { userSlug: username }
+  );
 
-    const difficulty={easy:0, medium:0, hard:0};
-    let solvedCount=0;
+const accepted =
+    ProgressData?.userProfileUserQuestionProgressV2?.numAcceptedQuestions || [];
 
-    const acStats=user.submitStatsGlobal.acSubmissionsNum || [];
-    for(const stat of acStats){
-        solvedCount+=stat.count;
+let solvedCount = 0;
+let difficulty = { easy: 0, medium: 0, hard: 0 };
 
-        const diff=stat.difficulty.toLowerCase();
-        if(difficulty[diff]!=undefined){
-            difficulty[diff]+=stat.count;
-        }
-    }
-    const recentsolved=
-    data.recentSubmissionList
-    ?.filter(s =>s.statusDisplay=="Accepted")
-    .slice(0,10)
-    .map(s=>({
-        title: s.title,
-        url: `https://leetcode.com/problems/${s.titleSlug}/`,
-        solvedAt: new Date(s.timestamp*1000)
-    }))||[];
-
-    const stats =await PlatformStats.findOneAndUpdate(
-        {
-            userId, platform:"leetcode",
-        },
-        {
-            solvedCount,
-            difficulty,
-            rating: user.profile?.rating || 0,
-            rank: user.profile?.ranking || 0,
-            status:"success",
-            lastUpdated:new Date()
-        },
-        { new: true, upsert: true }
-    )
-    return {stats, recentsolved};
+for(const item of accepted){
+    solvedCount+=item.count;
+    
+    if (item.difficulty === "EASY") difficulty.easy = item.count;
+    if (item.difficulty === "MEDIUM") difficulty.medium = item.count;
+    if (item.difficulty === "HARD") difficulty.hard = item.count;
 }
+
+// 3️⃣ Contest rating data
+const contestData = await leetcodeRequest(
+    USER_CONTEST_RANKING_INFO_QUERY,
+    { username }
+);
+const rating = contestData.userContestRanking?.rating || 0;
+const globalRanking = contestData.userContestRanking?.globalRanking || 0;
+
+  // 4️⃣ Recent accepted submissions
+const recentData = await leetcodeRequest(
+    RECENT_AC_SUBMISSIONS_QUERY,
+    { username, limit: 10 }
+);
+const recentSolved =
+    recentData?.recentAcSubmissionList?.map(sub => ({
+        title :sub.title,
+        slug: sub.titleSlug,
+        url: `https://leetcode.com/problems/${sub.titleSlug}`,
+        solvedAt: new Date(Number(sub.timestamp) * 1000),
+    })) || [];
+
+  // 5️⃣ Store / update platform stats
+  const stats = await PlatformStats.findOneAndUpdate(
+    {
+      userId,
+      platform: "leetcode",
+    },
+    {
+      solvedCount,
+      difficulty,
+      rating: rating,
+      rank: globalRanking,
+      status: "success",
+      lastUpdated: new Date(),
+    },
+    {
+      new: true,
+      upsert: true,
+    }
+  );
+
+  // 6️⃣ Return normalized data
+  return {
+    stats,
+    recentSolved,
+  };
+};

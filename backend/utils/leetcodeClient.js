@@ -1,21 +1,15 @@
-import axios from "axios";
-export const LeetcodeClient =axios.create({
-    baseURL: "https://leetcode.com/graphql",
-    timeout: 10000,
+export const leetcodeRequest = async (query, variables) => {
+  const res = await fetch("https://leetcode.com/graphql", {
+    method: "POST",
     headers: {
-        'Content-Type': 'application/json',
-        'referer': 'https://leetcode.com',
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-    }
-});
+      "Content-Type": "application/json",
+      Referer: "https://leetcode.com",
+    },
+    body: JSON.stringify({ query, variables }),
+  });
 
-export const leetcodeRequest=async (query,variables={}) => {
-    const res=await LeetcodeClient.post("",{
-        query,
-        variables
-    })
-    if(res.data.errors) {
-        throw new Error('Leetcode API error');
-    }
-    return res.data;
+  const json = await res.json();
+  if (json.errors) throw new Error("LeetCode GraphQL error");
+
+  return json.data;
 };

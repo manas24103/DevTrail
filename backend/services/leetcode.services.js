@@ -2,7 +2,7 @@ import { PlatformStats } from "../models/platformStats.js";
 import { leetcodeRequest } from "../utils/leetcodeClient.js";
 import { USER_CONTEST_RANKING_INFO_QUERY, USER_QUESTION_PROGRESS_QUERY , RECENT_AC_SUBMISSIONS_QUERY} from "../utils/GQLQueries.js";
 
-export const getLeetcodeStats = async (userId, username) => {
+export const getLeetcodeStats = async (userId, username,forceRefresh=false) => {
   // 1️⃣ Check cache (6 hours)
   const cached = await PlatformStats.findOne({
     userId,
@@ -10,6 +10,7 @@ export const getLeetcodeStats = async (userId, username) => {
   });
 
   if (
+    !forceRefresh &&
     cached &&
     cached.lastUpdated &&
     Date.now() - cached.lastUpdated.getTime() < 6 * 60 * 60 * 1000

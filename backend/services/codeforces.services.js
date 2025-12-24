@@ -7,14 +7,14 @@ const mapCfDifficulty = (rating) => {
   if (rating <= 1600) return "medium";
   return "hard";
 };
-export const getCodeforcesStats = async (userId, handle) => {
+export const getCodeforcesStats = async (userId, handle,forceRefresh=false) => {
   // 1️⃣ Check cache
   const cached = await PlatformStats.findOne({
     userId,
     platform: "codeforces"
   });
 
-  if (cached && Date.now() - cached.lastUpdated < 6 * 60 * 60 * 1000) {
+  if (!forceRefresh && cached && Date.now() - cached.lastUpdated < 6 * 60 * 60 * 1000) {
     return { stats: cached, recentSolved: [] };
   }
 

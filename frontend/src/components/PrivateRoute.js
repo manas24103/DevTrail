@@ -4,7 +4,7 @@ import { useAuth } from '@clerk/clerk-react';
 import { SignedIn, SignedOut } from '@clerk/clerk-react';
 
 const PrivateRoute = ({ children }) => {
-  const { isSignedIn, isLoaded } = useAuth();
+  const { isLoaded } = useAuth();
 
   if (!isLoaded) {
     return (

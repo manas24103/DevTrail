@@ -1,309 +1,99 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { api } from '../services/api';
-import { useAuth } from '../contexts/AuthContext';
+import { useState, useEffect } from 'react';
+import { dashboardApi, leetcodeApi, codeforcesApi } from '../services/api';
 
-// Cache for API responses
-const cache = {
-  leetCode: {},
-  codeforces: {},
-  lastUpdated: {}
-};
-
-// Maximum age for cached data in milliseconds (5 minutes)
-const CACHE_MAX_AGE = 5 * 60 * 1000;
-
-// Retry configuration
-const MAX_RETRIES = 3;
-const RETRY_DELAY = 1000; // 1 second
-
-// Helper function to process LeetCode data
-const processLeetCodeData = (profile, solved) => {
-  if (!profile || !solved) return null;
-  
-  return {
-    totalSolved: solved.solvedTotal || 0,
-    easySolved: solved.solvedByDifficulty?.easy || 0,
-    mediumSolved: solved.solvedByDifficulty?.medium || 0,
-    hardSolved: solved.solvedByDifficulty?.hard || 0,
-    ranking: profile.ranking || 0,
-    rating: profile.rating || 0,
-    username: profile.username || 'LeetCode User',
-    recentActivity: [],
-    avatar: profile.profile?.userAvatar || null,
-    platform: 'LeetCode'
-  };
-};
-
-// Helper function to process Codeforces data
-const processCodeforcesData = (data) => {
-  if (!data) return null;
-  
-  return {
-    solvedCount: data.solvedCount || 0,
-    easySolved: data.easySolved || 0,
-    mediumSolved: data.mediumSolved || 0,
-    hardSolved: data.hardSolved || 0,
-    rank: data.rank || 0,
-    rating: data.rating || 0,
-    maxRating: data.maxRating || 0,
-    maxRank: data.maxRank || 'unrated',
-    recentSubmissions: [],
-    avatar: data.avatar || null,
-    platform: 'Codeforces',
-    contribution: data.contribution || 0,
-    friendOfCount: data.friendOfCount || 0
-  };
-};
-
-// Helper function to fetch with retry
-const fetchWithRetry = async (url, options = {}, retries = MAX_RETRIES) => {
-  try {
-    console.log(`Fetching ${url}...`);
-    const response = await api.get(url, { ...options, signal: options.signal });
-    console.log(`Successfully fetched ${url}`, response.data);
-    return response.data;
-  } catch (error) {
-    if (axios.isCancel?.(error) || error.code === 'ERR_CANCELED') {
-      console.log(`Request to ${url} was cancelled`);
-      throw error;
-    }
-    
-    if (retries > 0) {
-      console.log(`Error fetching ${url}:`, error.response?.data || error.message);
-      console.log(`Retrying ${url}... (${retries} attempts left)`);
-      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
-      return fetchWithRetry(url, options, retries - 1);
-    }
-    
-    console.error(`Failed to fetch ${url} after ${MAX_RETRIES} attempts:`, error.response?.data || error.message);
-    throw error;
-  }
-};
-
-export const useProblemStats = () => {
-  const { currentUser } = useAuth();
+// Custom hook to fetch and manage dashboard data
+const useProblemStats = () => {
   const [stats, setStats] = useState({
+    platformStats: {
+      leetcode: null,
+      codeforces: null
+    },
     totalProblems: 0,
     easy: 0,
     medium: 0,
     hard: 0,
-    recentActivity: [],
-    rank: 0,
-    rating: 0,
-    loading: true,
-    error: null,
-    lastUpdated: null,
-    platformStats: {
-      leetcode: null,
-      codeforces: null
-    }
   });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const isMounted = useRef(true);
-
-  useEffect(() => {
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
-
-  const fetchStats = useCallback(async () => {
-    if (!isMounted.current) return;
-
-    console.log('fetchStats called with currentUser:', currentUser);
-    
-    // Check if user has any coding platform handles
-    const hasLeetCodeHandle = currentUser?.leetcodeHandle?.trim();
-    const hasCodeforcesHandle = currentUser?.codeforcesHandle?.trim();
-    
-    console.log('Handles found:', { 
-      leetcode: hasLeetCodeHandle, 
-      codeforces: hasCodeforcesHandle 
-    });
-    
-    if (!hasLeetCodeHandle && !hasCodeforcesHandle) {
-      console.log('No valid coding platform handles found in user profile');
-      setStats(prev => ({
-        ...prev,
-        loading: false,
-        error: new Error('No coding platform handles found in your profile. Please update your profile with your LeetCode and/or Codeforces handles.')
-      }));
-      return;
-    }
-
-    console.log('Fetching coding platform stats for user');
-    const controller = new AbortController();
-    
-    // Set a timeout for the entire operation
-    const timeoutId = setTimeout(() => {
-      console.warn('Request timed out after 30 seconds');
-      controller.abort();
-    }, 30000);
-
+  // Fetch dashboard data
+  const fetchDashboardData = async () => {
     try {
-      setStats(prev => ({ 
-        ...prev, 
-        loading: true, 
-        error: null,
+      setLoading(true);
+      setError(null);
+
+      // Fetch dashboard data
+      const dashboardData = await dashboardApi.getDashboard();
+      
+      // Fetch LeetCode data if handle exists
+      let leetcodeData = null;
+      if (dashboardData.handles?.leetcode) {
+        try {
+          leetcodeData = await leetcodeApi.getDashboard();
+        } catch (err) {
+          console.error('Error fetching LeetCode data:', err);
+        }
+      }
+
+      // Fetch Codeforces data if handle exists
+      let codeforcesData = null;
+      if (dashboardData.handles?.codeforces) {
+        try {
+          codeforcesData = await codeforcesApi.getDashboard();
+        } catch (err) {
+          console.error('Error fetching Codeforces data:', err);
+        }
+      }
+
+      // Process and combine the data
+      const processedData = {
         platformStats: {
-          leetcode: prev.platformStats?.leetcode ? { ...prev.platformStats.leetcode, loading: true } : null,
-          codeforces: prev.platformStats?.codeforces ? { ...prev.platformStats.codeforces, loading: true } : null
-        }
-      }));
-      
-      const now = Date.now();
-      const leetcodeKey = currentUser.leetcodeHandle;
-      const codeforcesKey = currentUser.codeforcesHandle;
-      
-      // Check cache first
-      const useLeetCodeCache = cache.leetCode[leetcodeKey] && 
-                             (now - (cache.lastUpdated.leetcode || 0)) < CACHE_MAX_AGE;
-      const useCodeforcesCache = cache.codeforces[codeforcesKey] && 
-                               (now - (cache.lastUpdated.codeforces || 0)) < CACHE_MAX_AGE;
-
-      console.log('Cache status:', { useLeetCodeCache, useCodeforcesCache });
-
-      const fetchPromises = [];
-      
-      // Fetch LeetCode data if not in cache or expired
-      if (currentUser?.leetcodeHandle) {
-        if (!useLeetCodeCache) {
-          fetchPromises.push(
-            (async () => {
-              try {
-                console.log('Fetching LeetCode data...');
-                const [profile, solved] = await Promise.all([
-                  fetchWithRetry(`/leetcode/${currentUser.leetcodeHandle}`, { signal: controller.signal }),
-                  fetchWithRetry(`/leetcode/${currentUser.leetcodeHandle}/solved`, { signal: controller.signal })
-                ]);
-
-                if (!isMounted.current) return [null, null];
-                
-                // Cache the successful response
-                cache.leetCode[leetcodeKey] = { profile, solved, timestamp: Date.now() };
-                cache.lastUpdated.leetcode = Date.now();
-                
-                return [profile, solved];
-              } catch (error) {
-                console.error('Error fetching LeetCode data:', error);
-                return [null, null];
-              }
-            })()
-          );
-        } else {
-          // Use cached data
-          console.log('Using cached LeetCode data');
-          fetchPromises.push(Promise.resolve([
-            cache.leetCode[leetcodeKey]?.profile || null,
-            cache.leetCode[leetcodeKey]?.solved || null
-          ]));
-        }
-      } else {
-        fetchPromises.push(Promise.resolve([null, null]));
-      }
-
-      // Fetch Codeforces data if not in cache or expired
-      if (currentUser?.codeforcesHandle) {
-        if (!useCodeforcesCache) {
-          fetchPromises.push(
-            (async () => {
-              try {
-                console.log('Fetching Codeforces data...');
-                const codeforcesData = await fetchWithRetry(
-                  `/codeforces/user/${currentUser.codeforcesHandle}`,
-                  { signal: controller.signal }
-                );
-
-                if (!isMounted.current) return null;
-                
-                // Cache the successful response
-                cache.codeforces[codeforcesKey] = { ...codeforcesData, timestamp: Date.now() };
-                cache.lastUpdated.codeforces = Date.now();
-                
-                console.log('Codeforces data received:', codeforcesData);
-                return codeforcesData;
-              } catch (error) {
-                console.error('Error fetching Codeforces data:', error);
-                return null;
-              }
-            })()
-          );
-        } else {
-          // Use cached data
-          console.log('Using cached Codeforces data');
-          fetchPromises.push(Promise.resolve(cache.codeforces[codeforcesKey] || null));
-        }
-      } else {
-        fetchPromises.push(Promise.resolve(null));
-      }
-
-      // Execute all fetches in parallel
-      const [
-        [leetCodeProfile, leetCodeSolved],
-        codeforcesData
-      ] = await Promise.all(fetchPromises);
-
-      console.log('API responses:', {
-        leetCodeProfile: !!leetCodeProfile,
-        leetCodeSolved: !!leetCodeSolved,
-        codeforcesData: !!codeforcesData
-      });
-
-      // Process the data
-      const leetCodeStats = leetCodeProfile && leetCodeSolved 
-        ? processLeetCodeData(leetCodeProfile, leetCodeSolved)
-        : null;
-        
-      const codeforcesStats = codeforcesData
-        ? processCodeforcesData(codeforcesData)
-        : null;
-        
-      console.log('Processed stats:', { leetCodeStats, codeforcesStats });
-
-      // Combine the stats
-      const combinedStats = {
-        totalProblems: (leetCodeStats?.totalSolved || 0) + (codeforcesStats?.solvedCount || 0),
-        easy: (leetCodeStats?.easySolved || 0) + (codeforcesStats?.easySolved || 0),
-        medium: (leetCodeStats?.mediumSolved || 0) + (codeforcesStats?.mediumSolved || 0),
-        hard: (leetCodeStats?.hardSolved || 0) + (codeforcesStats?.hardSolved || 0),
-        rank: leetCodeStats?.ranking || codeforcesStats?.rank || 0,
-        rating: leetCodeStats?.rating || codeforcesStats?.rating || 0,
-        recentActivity: []
+          leetcode: leetcodeData?.stats || null,
+          codeforces: codeforcesData?.stats || null,
+        },
+        totalProblems: (leetcodeData?.stats?.solvedCount || 0) + (codeforcesData?.stats?.solvedCount || 0),
+        easy: (leetcodeData?.stats?.difficulty?.easy || 0) + (codeforcesData?.stats?.difficulty?.easy || 0),
+        medium: (leetcodeData?.stats?.difficulty?.medium || 0) + (codeforcesData?.stats?.difficulty?.medium || 0),
+        hard: (leetcodeData?.stats?.difficulty?.hard || 0) + (codeforcesData?.stats?.difficulty?.hard || 0),
+        recentActivity: [
+          ...(leetcodeData?.recentSolved || []).map(item => ({
+            ...item,
+            platform: 'LeetCode',
+            timestamp: item.timestamp || new Date().toISOString()
+          })),
+          ...(codeforcesData?.recentSolved || []).map(item => ({
+            ...item,
+            platform: 'Codeforces',
+            timestamp: item.timestamp || new Date().toISOString()
+          }))
+        ].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
       };
 
-      setStats({
-        ...combinedStats,
-        loading: false,
-        error: null
-      });
-      
-    } catch (error) {
-      if (error.name !== 'AbortError') {
-        console.error('Error fetching stats:', error);
-        setStats(prev => ({
-          ...prev,
-          loading: false,
-          error: error.response?.data?.message || 'Failed to fetch statistics'
-        }));
-      }
+      setStats(processedData);
+    } catch (err) {
+      setError(err);
+      console.error('Error fetching dashboard data:', err);
     } finally {
-      clearTimeout(timeoutId);
+      setLoading(false);
     }
-  }, [currentUser]);
+  };
 
+  // Initial fetch
   useEffect(() => {
-    console.log('useEffect in useProblemStats triggered');
-    console.log('Current user in effect:', currentUser);
-    fetchStats();
-    
-    // Set up a refetch interval (e.g., every 5 minutes)
-    const intervalId = setInterval(fetchStats, 5 * 60 * 1000);
-    
-    return () => clearInterval(intervalId);
-  }, [fetchStats, currentUser]);
+    fetchDashboardData();
+  }, []);
 
-  // Return stats with refetch function (using refetch to match DashboardPage's expectation)
-  return { ...stats, refetch: fetchStats };
+  // Function to refresh data
+  const refreshData = () => {
+    return fetchDashboardData();
+  };
+
+  return {
+    stats,
+    loading,
+    error,
+    refreshData
+  };
 };
 
 export default useProblemStats;

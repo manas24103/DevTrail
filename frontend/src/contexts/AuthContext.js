@@ -78,16 +78,35 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       setError('');
+      setLoading(true);
       const response = await authApi.register(userData);
-      const { token, data: user } = response.data;
+      console.log('Registration response:', response);
       
-      // Store the token in localStorage
-      localStorage.setItem('token', token);
-      
-      // Set the current user
-      setCurrentUser(user);
-      
-      return { success: true };
+      // Handle successful registration
+      if (response && response.success) {
+        // Store the token in localStorage if it exists in the response
+        if (response.token) {
+          localStorage.setItem('token', response.token);
+        }
+        
+        // Set the current user with the data from the response
+        if (response.data) {
+          setCurrentUser(response.data);
+          return { success: true, user: response.data };
+        } else {
+          // If no user data in response, try to fetch it
+          try {
+            const profileResponse = await authApi.getProfile();
+            setCurrentUser(profileResponse);
+            return { success: true, user: profileResponse };
+          } catch (profileErr) {
+            console.error('Error fetching user profile:', profileErr);
+            return { success: true, user: null };
+          }
+        }
+      } else {
+        throw new Error(response?.message || 'Registration failed');
+      }
     } catch (err) {
       const errorMessage = err.response?.data?.message || 'Registration failed. Please try again.';
       setError(errorMessage);

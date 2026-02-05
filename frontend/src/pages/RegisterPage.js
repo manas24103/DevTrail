@@ -1,260 +1,265 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { SignUp } from '@clerk/clerk-react';
+import { Zap, ArrowRight, Shield, Users } from 'lucide-react';
 
 const RegisterPage = () => {
-  const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    codeforcesHandle: '',
-    leetcodeHandle: ''
-  });
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { register } = useAuth();
-  const navigate = useNavigate();
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-
-    if (formData.password !== formData.confirmPassword) {
-      return setError('Passwords do not match');
-    }
-
-    setLoading(true);
-
-    try {
-      const { confirmPassword, ...userData } = formData;
-      const result = await register(userData);
-      
-      if (result.success) {
-        navigate('/dashboard');
-      } else {
-        setError(result.error || 'Registration failed. Please try again.');
-      }
-    } catch (err) {
-      setError('An error occurred. Please try again.');
-      console.error('Registration error:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-white">
-      {/* Left Side - Blue Section */}
-      <div className="w-full md:w-1/2 bg-[#1e40af] flex flex-col items-center justify-center p-8 text-white">
-        <div className="max-w-md text-center">
-          <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-10 w-10 text-blue-600"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
-              />
-            </svg>
-          </div>
-          <h1 className="text-3xl font-bold mb-4">Welcome to DevTrail!</h1>
-          <p className="text-blue-100 mb-8">Create your account to start your coding journey</p>
-          <div className="w-16 h-1 bg-blue-400 mx-auto"></div>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[120px] animate-float" />
+        <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-purple-500/10 rounded-full blur-[120px] animate-float-delayed" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-[100px] animate-pulse-slow" />
       </div>
 
-      {/* Right Side - Registration Form */}
-      <div className="w-full md:w-1/2 flex items-center justify-center p-8">
-        <div className="w-full max-w-md">
-          <h2 className="text-2xl font-bold text-gray-800 mb-8 text-center">Create Account</h2>
+      {/* Grid Pattern */}
+      <div 
+        className="fixed inset-0 opacity-[0.02]"
+        style={{
+          backgroundImage: `linear-gradient(rgba(139, 92, 246, 0.5) 1px, transparent 1px), 
+                           linear-gradient(90deg, rgba(139, 92, 246, 0.5) 1px, transparent 1px)`,
+          backgroundSize: '50px 50px'
+        }}
+      />
 
-          {error && (
-            <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <svg
-                    className="h-5 w-5 text-red-500"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+      <div className="relative z-10 min-h-screen flex flex-col md:flex-row">
+        {/* Left Side - Brand Section */}
+        <div className="w-full md:w-1/2 flex items-center justify-center p-8">
+          <div className="max-w-md text-center space-y-8">
+            <div className="animate-slide-down">
+              <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl">
+                <Zap className="w-10 h-10 text-white" />
+              </div>
+              <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-indigo-200 to-purple-200 bg-clip-text text-transparent mb-4">
+                Welcome to DevTrail
+              </h1>
+              <p className="text-xl text-slate-400 mb-8">
+                Start tracking your coding journey with powerful analytics and insights
+              </p>
+            </div>
+
+            <div className="space-y-6 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+              <div className="glass-card p-6 text-left group hover:scale-105 transition-all duration-300">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center text-white shadow-lg">
+                    <Shield className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="text-white font-semibold mb-1">Secure Authentication</h3>
+                    <p className="text-slate-400 text-sm">Powered by Clerk for maximum security</p>
+                  </div>
                 </div>
-                <div className="ml-3">
-                  <p className="text-sm text-red-700">{error}</p>
+              </div>
+
+              <div className="glass-card p-6 text-left group hover:scale-105 transition-all duration-300">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white shadow-lg">
+                    <Users className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="text-white font-semibold mb-1">Join Community</h3>
+                    <p className="text-slate-400 text-sm">Connect with thousands of developers</p>
+                  </div>
                 </div>
               </div>
             </div>
-          )}
 
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
-                Username
-              </label>
-              <input
-                id="username"
-                name="username"
-                type="text"
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Choose a username"
-                value={formData.username}
-                onChange={handleChange}
-              />
+            <div className="animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+              <Link 
+                to="/login" 
+                className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors duration-200"
+              >
+                <span>Already have an account?</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
             </div>
+          </div>
+        </div>
 
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Enter your email"
-                value={formData.email}
-                onChange={handleChange}
-              />
-            </div>
+        {/* Right Side - Registration Form */}
+        <div className="w-full md:w-1/2 flex items-center justify-center p-8">
+          <div className="w-full max-w-md">
+            <div className="glass-card p-8 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold text-white mb-2">Create Account</h2>
+                <p className="text-slate-400">Join DevTrail and start tracking your progress</p>
+              </div>
+              
+              <div className="mb-6">
+                <div className="glass-badge mx-auto">
+                  <Shield className="w-4 h-4 mr-2" />
+                  <span>Secure Sign Up</span>
+                </div>
+              </div>
 
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Create a password"
-                value={formData.password}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                Confirm Password
-              </label>
-              <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Confirm your password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div>
-              <label htmlFor="codeforcesHandle" className="block text-sm font-medium text-gray-700 mb-1">
-                Codeforces Handle
-              </label>
-              <input
-                id="codeforcesHandle"
-                name="codeforcesHandle"
-                type="text"
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-4"
-                placeholder="Your Codeforces username"
-                value={formData.codeforcesHandle}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div>
-              <label htmlFor="leetcodeHandle" className="block text-sm font-medium text-gray-700 mb-1">
-                LeetCode Username
-              </label>
-              <input
-                id="leetcodeHandle"
-                name="leetcodeHandle"
-                type="text"
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-4"
-                placeholder="Your LeetCode username"
-                value={formData.leetcodeHandle}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className="flex items-start">
-              <div className="flex items-center h-5">
-                <input
-                  id="terms"
-                  name="terms"
-                  type="checkbox"
-                  required
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              <div className="bg-white/5 backdrop-blur-sm rounded-xl p-1 border border-slate-700/50">
+                <SignUp 
+                  path="/register"
+                  routing="path"
+                  signInUrl="/login"
+                  afterSignUpUrl="/platform-setup"
+                  redirectUrl="/platform-setup"
+                  appearance={{
+                    elements: {
+                      rootBox: "w-full",
+                      card: "bg-transparent shadow-none border-0 p-0",
+                      headerTitle: "hidden",
+                      headerSubtitle: "hidden",
+                      socialButtonsBlockButton: "glass-button-sm w-full mb-3",
+                      formButtonPrimary: "glass-button-primary w-full",
+                      formFieldLabel: "text-slate-300 text-sm font-medium",
+                      formFieldInput: "bg-slate-800/50 border-slate-700 text-white placeholder-slate-500 rounded-lg",
+                      footerActionLink: "text-indigo-400 hover:text-indigo-300",
+                      dividerText: "text-slate-500",
+                      identityPreviewText: "text-slate-300",
+                      identityPreviewEditButton: "text-indigo-400 hover:text-indigo-300"
+                    }
+                  }}
                 />
               </div>
-              <div className="ml-3 text-sm">
-                <label htmlFor="terms" className="font-medium text-gray-700">
-                  I agree to the{' '}
-                  <a href="/terms" className="text-blue-600 hover:text-blue-500">
+
+              <div className="mt-6 text-center">
+                <p className="text-slate-400 text-sm">
+                  By signing up, you agree to our{' '}
+                  <Link to="/terms" className="text-indigo-400 hover:text-indigo-300 underline">
                     Terms of Service
-                  </a>{' '}
+                  </Link>{' '}
                   and{' '}
-                  <a href="/privacy" className="text-blue-600 hover:text-blue-500">
+                  <Link to="/privacy" className="text-indigo-400 hover:text-indigo-300 underline">
                     Privacy Policy
-                  </a>
-                </label>
+                  </Link>
+                </p>
               </div>
-            </div>
-
-            <div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? 'Creating account...' : 'Create Account'}
-              </button>
-            </div>
-          </form>
-
-          <div className="mt-6 text-center text-sm">
-            <p className="text-gray-600">
-              Already have an account?{' '}
-              <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
-                Sign in
-              </Link>
-            </p>
-            <div className="mt-4">
-              <Link to="/" className="text-gray-500 hover:text-gray-700">
-                ← Back to Home
-              </Link>
             </div>
           </div>
         </div>
       </div>
+
+      <style jsx>{`
+        .glass-card {
+          background: rgba(15, 23, 42, 0.4);
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(148, 163, 184, 0.1);
+          border-radius: 24px;
+          padding: 32px;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+          transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+          border-color: rgba(99, 102, 241, 0.3);
+          box-shadow: 0 12px 48px rgba(99, 102, 241, 0.2);
+        }
+
+        .glass-badge {
+          display: inline-flex;
+          align-items: center;
+          padding: 8px 16px;
+          background: rgba(99, 102, 241, 0.1);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(99, 102, 241, 0.2);
+          border-radius: 8px;
+          font-size: 12px;
+          font-weight: 600;
+          color: #c7d2fe;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .glass-button-sm {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 10px 16px;
+          background: rgba(99, 102, 241, 0.1);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(99, 102, 241, 0.3);
+          border-radius: 8px;
+          color: #e0e7ff;
+          font-size: 14px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .glass-button-sm:hover {
+          background: rgba(99, 102, 241, 0.2);
+          border-color: rgba(99, 102, 241, 0.5);
+          transform: translateY(-1px);
+        }
+
+        .glass-button-primary {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 10px 16px;
+          background: linear-gradient(135deg, rgba(99, 102, 241, 0.8), rgba(168, 85, 247, 0.8));
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(99, 102, 241, 0.5);
+          border-radius: 8px;
+          color: white;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .glass-button-primary:hover {
+          background: linear-gradient(135deg, rgba(99, 102, 241, 0.9), rgba(168, 85, 247, 0.9));
+          border-color: rgba(99, 102, 241, 0.7);
+          transform: translateY(-1px);
+          box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        @keyframes float {
+          0%, 100% { transform: translate(0, 0); }
+          50% { transform: translate(50px, -50px); }
+        }
+
+        @keyframes float-delayed {
+          0%, 100% { transform: translate(0, 0); }
+          50% { transform: translate(-50px, 50px); }
+        }
+
+        @keyframes pulse-slow {
+          0%, 100% { opacity: 0.3; }
+          50% { opacity: 0.6; }
+        }
+
+        @keyframes slide-down {
+          from { opacity: 0; transform: translateY(-20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fade-in-up {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-float {
+          animation: float 20s ease-in-out infinite;
+        }
+
+        .animate-float-delayed {
+          animation: float-delayed 25s ease-in-out infinite;
+        }
+
+        .animate-pulse-slow {
+          animation: pulse-slow 4s ease-in-out infinite;
+        }
+
+        .animate-slide-down {
+          animation: slide-down 0.6s ease forwards;
+          opacity: 0;
+        }
+
+        .animate-fade-in-up {
+          animation: fade-in-up 0.6s ease forwards;
+          opacity: 0;
+        }
+      `}</style>
     </div>
   );
 };

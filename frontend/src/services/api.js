@@ -23,39 +23,54 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+// Response interceptor to handle API response format
+api.interceptors.response.use(
+  (response) => {
+    // If the response has a data property and it's an ApiResponse, return the nested data
+    if (response.data && response.data.data !== undefined) {
+      return response.data.data;
+    }
+    return response.data;
+  },
+  (error) => {
+    // Handle errors in a standard way
+    const errorMessage = error.response?.data?.message || error.message || 'Something went wrong';
+    return Promise.reject(new Error(errorMessage));
+  }
+);
+
 // ---------------- AUTH API ----------------
 export const authApi = {
-  login: (email, password) => api.post('/auth/login', { email, password }),
-  register: (userData) => api.post('/auth/register', userData),
-  getProfile: () => api.get('/users/me'),
+  login: (email, password) => api.post('/v1/auth/login', { email, password }),
+  register: (userData) => api.post('/v1/auth/register', userData),
+  getProfile: () => api.get('/v1/users/me'),
 };
 
-// ---------------- LEETCODE (via backend) ----------------
-// NOTE: All calls now go to your backend -> backend fetches from Alfa API
+// ---------------- DASHBOARD ----------------
+export const dashboardApi = {
+  getDashboard: () => api.get('/v1/dashboard'),
+};
+
+// ---------------- LEETCODE ----------------
 export const leetcodeApi = {
-  getProfile: (username) => api.get(`/leetcode/${username}`),
-  getSolved: (username) => api.get(`/leetcode/${username}/solved`),
-  getContests: (username) => api.get(`/leetcode/${username}/contest/history`),
-  getDailyChallenge: () => api.get('/leetcode/daily'),
+  getDashboard: (params = {}) => api.get('/v1/leetcode', { params }),
 };
 
-// ---------------- CODEFORCES (via backend) ----------------
-// Updated to match backend routes in backend/routes/codeforces.routes.js
+// ---------------- CODEFORCES ----------------
 export const codeforcesApi = {
-  getStats: (handle) => api.get(`/codeforces/user/${handle}`),
-  getUserRating: (handle) => api.get(`/codeforces/rating/${handle}`),
-  getSubmissions: (handle, count = 50) => api.get(`/codeforces/submissions/${handle}`, { params: { count } }),
+  getDashboard: (params = {}) => api.get('/v1/codeforces', { params }),
+};
+
+// ---------------- USER ----------------
+export const userApi = {
+  updateProfile: (data) => api.patch('/v1/users/me', data),
+  changePassword: (data) => api.patch('/v1/users/change-password', data),
+  updateHandles: (data) => api.patch('/v1/users/update-handles', data),
 };
 
 // ---------------- LEADERBOARD ----------------
 export const leaderboardApi = {
   getLeaderboard: () => api.get('/leaderboard'),
-};
-
-// ---------------- USER ----------------
-export const userApi = {
-  updateProfile: (data) => api.put('/users/profile', data),
-  changePassword: (data) => api.post('/users/change-password', data),
 };
 
 export default api;

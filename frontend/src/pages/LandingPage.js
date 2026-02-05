@@ -1,320 +1,349 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import Header from '../components/Header';
+import { Zap, TrendingUp, Target, Award, BarChart3, Shield, Users, ArrowRight } from 'lucide-react';
 
 const LandingPage = () => {
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* Navigation */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex">
-              <div className="flex-shrink-0 flex items-center">
-                <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
-                  DT
-                </div>
-                <span className="ml-3 text-xl font-semibold text-gray-900">DevTrail</span>
-              </div>
-              <nav className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                <a href="#features" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                  Features
-                </a>
-                <a href="#how-it-works" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                  How it works
-                </a>
-                <a href="#why" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                  Why DevTrail
-                </a>
-              </nav>
-            </div>
-            <div className="hidden sm:ml-6 sm:flex sm:items-center space-x-4">
-              <Link to="/login" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200">
-                Sign in
-              </Link>
-              <Link to="/register" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
-                Get started
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[120px] animate-float" />
+        <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-purple-500/10 rounded-full blur-[120px] animate-float-delayed" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-[100px] animate-pulse-slow" />
+      </div>
+
+      {/* Grid Pattern */}
+      <div 
+        className="fixed inset-0 opacity-[0.02]"
+        style={{
+          backgroundImage: `linear-gradient(rgba(139, 92, 246, 0.5) 1px, transparent 1px), 
+                           linear-gradient(90deg, rgba(139, 92, 246, 0.5) 1px, transparent 1px)`,
+          backgroundSize: '50px 50px'
+        }}
+      />
+
+      <Header />
 
       {/* Hero Section */}
-      <main className="flex-grow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+      <main className="relative z-10 pt-24 pb-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
-              <span className="block">Track Your</span>
-              <span className="block text-blue-600">Coding Journey</span>
+            <div className="inline-flex items-center glass-badge mb-6 animate-slide-down">
+              <Zap className="w-4 h-4 mr-2" />
+              <span>Track Your Coding Journey</span>
+            </div>
+            
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-slide-down" style={{ animationDelay: '0.1s' }}>
+              <span className="block bg-gradient-to-r from-white via-indigo-200 to-purple-200 bg-clip-text text-transparent">
+                Master Your
+              </span>
+              <span className="block bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                Coding Skills
+              </span>
             </h1>
-            <p className="mt-3 max-w-md mx-auto text-base text-gray-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
-              Connect with platforms like <span className="font-semibold text-blue-600">LeetCode</span> and{' '}
-              <span className="font-semibold text-blue-600">Codeforces</span> to track your progress, 
-              analyze your performance, and improve your coding skills.
+            
+            <p className="text-xl text-slate-400 max-w-3xl mx-auto mb-8 animate-slide-down" style={{ animationDelay: '0.2s' }}>
+              Connect with <span className="text-indigo-400 font-semibold">LeetCode</span> and{' '}
+              <span className="text-purple-400 font-semibold">Codeforces</span> to track your progress, 
+              analyze performance, and level up your coding game.
             </p>
-            <div className="mt-5 max-w-md mx-auto sm:flex sm:justify-center md:mt-8">
-              <div className="rounded-md shadow">
-                <Link
-                  to="/register"
-                  className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg md:px-10"
-                >
-                  Get Started for Free
-                </Link>
-              </div>
-              <div className="mt-3 rounded-md shadow sm:mt-0 sm:ml-3">
-                <Link
-                  to="/login"
-                  className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-blue-600 bg-white hover:bg-gray-50 md:py-4 md:text-lg md:px-10"
-                >
-                  Sign In
-                </Link>
-              </div>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-down" style={{ animationDelay: '0.3s' }}>
+              <Link
+                to="/register"
+                className="glass-button-primary group"
+              >
+                <span>Get Started</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+              <Link
+                to="/login"
+                className="glass-button-sm"
+              >
+                Sign In
+              </Link>
             </div>
           </div>
         </div>
 
         {/* Features Section */}
-        <section id="features" className="py-16 bg-gray-50">
+        <section id="features" className="py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center">
-              <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">What DevTrail does for you</h2>
-              <p className="mt-4 text-lg text-gray-500">
-                Think of DevTrail as your personal analytics dashboard for coding practice.
+            <div className="text-center mb-16">
+              <h2 className="text-4xl font-bold bg-gradient-to-r from-white via-indigo-200 to-purple-200 bg-clip-text text-transparent mb-4">
+                Powerful Features
+              </h2>
+              <p className="text-lg text-slate-400 max-w-2xl mx-auto">
+                Everything you need to track and improve your coding performance
               </p>
             </div>
 
-            <div className="mt-10">
-              <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3">
-                {/* Feature 1 */}
-                <div className="bg-white p-6 rounded-lg shadow">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                    <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[
+                {
+                  icon: <BarChart3 className="w-6 h-6" />,
+                  title: "Unified Analytics",
+                  description: "All your coding stats from multiple platforms in one beautiful dashboard",
+                  gradient: "from-blue-500 to-cyan-500"
+                },
+                {
+                  icon: <TrendingUp className="w-6 h-6" />,
+                  title: "Progress Tracking",
+                  description: "Visualize your improvement over time with detailed charts and insights",
+                  gradient: "from-emerald-500 to-green-500"
+                },
+                {
+                  icon: <Target className="w-6 h-6" />,
+                  title: "Weak Area Detection",
+                  description: "AI-powered analysis identifies topics where you need more practice",
+                  gradient: "from-amber-500 to-orange-500"
+                },
+                {
+                  icon: <Award className="w-6 h-6" />,
+                  title: "Achievement System",
+                  description: "Unlock badges and milestones as you solve more problems",
+                  gradient: "from-purple-500 to-pink-500"
+                },
+                {
+                  icon: <Shield className="w-6 h-6" />,
+                  title: "Secure & Private",
+                  description: "Your data is encrypted and secure. We never share your information",
+                  gradient: "from-rose-500 to-red-500"
+                },
+                {
+                  icon: <Users className="w-6 h-6" />,
+                  title: "Community Insights",
+                  description: "Compare your progress with peers and learn from the community",
+                  gradient: "from-indigo-500 to-blue-500"
+                }
+              ].map((feature, index) => (
+                <div
+                  key={feature.title}
+                  className="glass-card group hover:scale-105 transition-all duration-300 animate-fade-in-up"
+                  style={{ animationDelay: `${0.4 + index * 0.1}s` }}
+                >
+                  <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform duration-300 mb-6`}>
+                    {feature.icon}
                   </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Unified Stats</h3>
-                  <p className="text-gray-500">
-                    Pulls your data from LeetCode and Codeforces into one clean dashboard – problems solved,
-                    difficulty breakdown, tags, and more.
-                  </p>
+                  <h3 className="text-xl font-semibold text-white mb-3">{feature.title}</h3>
+                  <p className="text-slate-400 leading-relaxed">{feature.description}</p>
                 </div>
-
-                {/* Feature 2 */}
-                <div className="bg-white p-6 rounded-lg shadow">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                    <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                    </svg>
-                  </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Real-time Insights</h3>
-                  <p className="text-gray-500">
-                    See how your contest rating, streaks, and daily practice are improving with
-                    real-time graphs and timelines.
-                  </p>
-                </div>
-
-                {/* Feature 3 */}
-                <div className="bg-white p-6 rounded-lg shadow">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                    <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Weak Area Detection</h3>
-                  <p className="text-gray-500">
-                    Automatically identifies weak topics (like DP, graphs, greedy) so you know exactly
-                    what to focus on next.
-                  </p>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* How it Works Section */}
-        <section id="how-it-works" className="py-16 bg-white">
+        {/* How It Works */}
+        <section id="how-it-works" className="py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center">
-              <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">How it works</h2>
-              <p className="mt-4 text-lg text-gray-500">
-                Get started in under a minute.
+            <div className="text-center mb-16">
+              <h2 className="text-4xl font-bold bg-gradient-to-r from-white via-indigo-200 to-purple-200 bg-clip-text text-transparent mb-4">
+                How It Works
+              </h2>
+              <p className="text-lg text-slate-400 max-w-2xl mx-auto">
+                Get started in three simple steps
               </p>
             </div>
 
-            <div className="mt-10">
-              <div className="relative">
-                <div className="lg:grid lg:grid-flow-row-dense lg:grid-cols-3 lg:gap-8 lg:items-center">
-                  <div className="lg:col-start-1 space-y-8">
-                    {/* Step 1 */}
-                    <div className="bg-white p-6 rounded-lg shadow border border-gray-100">
-                      <div className="flex items-center">
-                        <div className="flex items-center justify-center h-10 w-10 rounded-md bg-blue-500 text-white font-bold text-lg">1</div>
-                        <h3 className="ml-4 text-lg font-medium text-gray-900">Create / Login to DevTrail</h3>
-                      </div>
-                      <p className="mt-2 text-gray-500">
-                        Click on the login button and sign in using your email to create your DevTrail account.
-                      </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {[
+                {
+                  step: "01",
+                  title: "Create Account",
+                  description: "Sign up securely with Clerk authentication",
+                  icon: <Users className="w-8 h-8" />
+                },
+                {
+                  step: "02", 
+                  title: "Connect Platforms",
+                  description: "Link your LeetCode and Codeforces accounts",
+                  icon: <Shield className="w-8 h-8" />
+                },
+                {
+                  step: "03",
+                  title: "Track Progress",
+                  description: "View your analytics and improve your skills",
+                  icon: <BarChart3 className="w-8 h-8" />
+                }
+              ].map((step, index) => (
+                <div
+                  key={step.step}
+                  className="relative animate-fade-in-up"
+                  style={{ animationDelay: `${1.0 + index * 0.1}s` }}
+                >
+                  <div className="glass-card h-full p-8">
+                    <div className="text-4xl font-bold text-indigo-400 mb-4">{step.step}</div>
+                    <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-lg mb-6">
+                      {step.icon}
                     </div>
-
-                    {/* Step 2 */}
-                    <div className="bg-white p-6 rounded-lg shadow border border-gray-100">
-                      <div className="flex items-center">
-                        <div className="flex items-center justify-center h-10 w-10 rounded-md bg-blue-500 text-white font-bold text-lg">2</div>
-                        <h3 className="ml-4 text-lg font-medium text-gray-900">Connect Coding Profiles</h3>
-                      </div>
-                      <p className="mt-2 text-gray-500">
-                        Add your LeetCode and Codeforces handles. DevTrail securely fetches your public stats.
-                      </p>
-                    </div>
-
-                    {/* Step 3 */}
-                    <div className="bg-white p-6 rounded-lg shadow border border-gray-100">
-                      <div className="flex items-center">
-                        <div className="flex items-center justify-center h-10 w-10 rounded-md bg-blue-500 text-white font-bold text-lg">3</div>
-                        <h3 className="ml-4 text-lg font-medium text-gray-900">View Live Dashboard</h3>
-                      </div>
-                      <p className="mt-2 text-gray-500">
-                        Get a personalised dashboard with charts, streaks, topic analysis, and progress over time.
-                      </p>
-                    </div>
+                    <h3 className="text-xl font-semibold text-white mb-3">{step.title}</h3>
+                    <p className="text-slate-400">{step.description}</p>
                   </div>
-
-                  <div className="mt-10 lg:mt-0 lg:col-start-2 lg:col-span-2">
-                    <div className="bg-gray-50 p-6 rounded-lg shadow-inner border border-gray-200">
-                      <div className="aspect-w-16 aspect-h-9 rounded-md overflow-hidden">
-                        <div className="w-full h-64 bg-gradient-to-br from-blue-50 to-blue-100 rounded-md flex items-center justify-center">
-                          <div className="text-center p-6">
-                            <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 mb-4">
-                              <svg className="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                              </svg>
-                            </div>
-                            <h3 className="text-lg font-medium text-gray-900 mb-2">Dashboard Preview</h3>
-                            <p className="text-gray-500 text-sm">
-                              Your personalized coding analytics will appear here once you connect your accounts.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
+                  {index < 2 && (
+                    <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2">
+                      <ArrowRight className="w-8 h-8 text-indigo-400" />
                     </div>
-                  </div>
+                  )}
                 </div>
-              </div>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* Why DevTrail Section */}
-        <section id="why" className="py-16 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center">
-              <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">Why DevTrail?</h2>
-              <p className="mt-4 text-lg text-gray-500">
-                Designed for students preparing for internships, placements, and competitive programming.
+        {/* CTA Section */}
+        <section className="py-20">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div className="glass-card p-12">
+              <h2 className="text-4xl font-bold bg-gradient-to-r from-white via-indigo-200 to-purple-200 bg-clip-text text-transparent mb-4">
+                Ready to Level Up?
+              </h2>
+              <p className="text-xl text-slate-400 mb-8">
+                Join thousands of developers tracking their coding journey
               </p>
-            </div>
-
-            <div className="mt-10">
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                <div className="bg-white p-6 rounded-lg shadow border border-gray-100">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0 bg-blue-100 rounded-md p-2">
-                      <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    </div>
-                    <h3 className="ml-3 text-lg font-medium text-gray-900">Save time, stay consistent</h3>
-                  </div>
-                  <p className="mt-2 text-gray-500">
-                    No need to manually track problems in Excel or Notion. DevTrail keeps your history,
-                    streaks, and growth updated automatically.
-                  </p>
-                </div>
-
-                <div className="bg-white p-6 rounded-lg shadow border border-gray-100">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0 bg-blue-100 rounded-md p-2">
-                      <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M12 18h.01" />
-                      </svg>
-                    </div>
-                    <h3 className="ml-3 text-lg font-medium text-gray-900">Interview-ready preparation</h3>
-                  </div>
-                  <p className="mt-2 text-gray-500">
-                    Focus on the right topics, see where you're weak, and show your consistent progress
-                    when talking to recruiters or mentors.
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-10 text-center">
-                <h3 className="text-lg font-medium text-gray-900">Ready to improve your coding skills?</h3>
-                <p className="mt-2 text-gray-500 max-w-2xl mx-auto">
-                  Join thousands of developers who use DevTrail to track their coding journey and land their dream jobs.
-                </p>
-                <div className="mt-6">
-                  <Link
-                    to="/register"
-                    className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
-                  >
-                    Get Started for Free
-                  </Link>
-                  <p className="mt-3 text-sm text-gray-500">
-                    Already have an account?{' '}
-                    <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
-                      Sign in
-                    </Link>
-                  </p>
-                </div>
-              </div>
+              <Link
+                to="/register"
+                className="glass-button-primary group text-lg px-8 py-4"
+              >
+                <span>Start Free Today</span>
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Link>
             </div>
           </div>
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-white border-t border-gray-200">
-        <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8">
-          <div className="xl:grid xl:grid-cols-3 xl:gap-8">
-            <div className="space-y-8 xl:col-span-1">
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
-                  DT
-                </div>
-                <span className="ml-3 text-xl font-semibold text-gray-900">DevTrail</span>
-              </div>
-              <p className="text-gray-500 text-base">
-                Your personal analytics dashboard for coding practice and interview preparation.
-              </p>
-            </div>
-            <div className="mt-12 grid grid-cols-2 gap-8 xl:mt-0 xl:col-span-2">
-              <div className="md:grid md:grid-cols-2 md:gap-8">
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-900 tracking-wider uppercase">Product</h3>
-                  <ul className="mt-4 space-y-4">
-                    <li><a href="#features" className="text-base text-gray-500 hover:text-gray-900">Features</a></li>
-                    <li><a href="#how-it-works" className="text-base text-gray-500 hover:text-gray-900">How It Works</a></li>
-                    <li><a href="#why" className="text-base text-gray-500 hover:text-gray-900">Why DevTrail</a></li>
-                  </ul>
-                </div>
-                <div className="mt-12 md:mt-0">
-                  <h3 className="text-sm font-semibold text-gray-900 tracking-wider uppercase">Support</h3>
-                  <ul className="mt-4 space-y-4">
-                    <li><Link to="/contact" className="text-base text-gray-500 hover:text-gray-900">Contact Us</Link></li>
-                    <li><Link to="/privacy" className="text-base text-gray-500 hover:text-gray-900">Privacy Policy</Link></li>
-                    <li><Link to="/terms" className="text-base text-gray-500 hover:text-gray-900">Terms of Service</Link></li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="mt-12 border-t border-gray-200 pt-8">
-            <p className="text-base text-gray-400 text-center">
-              &copy; {new Date().getFullYear()} DevTrail. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <style jsx>{`
+        .glass-badge {
+          display: inline-flex;
+          align-items: center;
+          padding: 8px 16px;
+          background: rgba(99, 102, 241, 0.1);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(99, 102, 241, 0.2);
+          border-radius: 8px;
+          font-size: 14px;
+          font-weight: 600;
+          color: #c7d2fe;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .glass-card {
+          background: rgba(15, 23, 42, 0.4);
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(148, 163, 184, 0.1);
+          border-radius: 24px;
+          padding: 32px;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+          transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+          border-color: rgba(99, 102, 241, 0.3);
+          box-shadow: 0 12px 48px rgba(99, 102, 241, 0.2);
+        }
+
+        .glass-button-primary {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 12px 24px;
+          background: linear-gradient(135deg, rgba(99, 102, 241, 0.8), rgba(168, 85, 247, 0.8));
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(99, 102, 241, 0.5);
+          border-radius: 12px;
+          color: white;
+          font-size: 16px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+          text-decoration: none;
+        }
+
+        .glass-button-primary:hover {
+          background: linear-gradient(135deg, rgba(99, 102, 241, 0.9), rgba(168, 85, 247, 0.9));
+          border-color: rgba(99, 102, 241, 0.7);
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+          text-decoration: none;
+          color: white;
+        }
+
+        .glass-button-sm {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 12px 24px;
+          background: rgba(99, 102, 241, 0.1);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(99, 102, 241, 0.3);
+          border-radius: 12px;
+          color: #e0e7ff;
+          font-size: 16px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          text-decoration: none;
+        }
+
+        .glass-button-sm:hover {
+          background: rgba(99, 102, 241, 0.2);
+          border-color: rgba(99, 102, 241, 0.5);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+          text-decoration: none;
+          color: #e0e7ff;
+        }
+
+        @keyframes float {
+          0%, 100% { transform: translate(0, 0); }
+          50% { transform: translate(50px, -50px); }
+        }
+
+        @keyframes float-delayed {
+          0%, 100% { transform: translate(0, 0); }
+          50% { transform: translate(-50px, 50px); }
+        }
+
+        @keyframes pulse-slow {
+          0%, 100% { opacity: 0.3; }
+          50% { opacity: 0.6; }
+        }
+
+        @keyframes slide-down {
+          from { opacity: 0; transform: translateY(-20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fade-in-up {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-float {
+          animation: float 20s ease-in-out infinite;
+        }
+
+        .animate-float-delayed {
+          animation: float-delayed 25s ease-in-out infinite;
+        }
+
+        .animate-pulse-slow {
+          animation: pulse-slow 4s ease-in-out infinite;
+        }
+
+        .animate-slide-down {
+          animation: slide-down 0.6s ease forwards;
+          opacity: 0;
+        }
+
+        .animate-fade-in-up {
+          animation: fade-in-up 0.6s ease forwards;
+          opacity: 0;
+        }
+      `}</style>
     </div>
   );
 };

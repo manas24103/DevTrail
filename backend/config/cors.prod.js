@@ -4,7 +4,7 @@ const setupCors = (app) => {
   const allowedOrigins = process.env.ALLOWED_ORIGINS
     ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
     : [];
-
+  console.log("Allowed Origins:", allowedOrigins);
   // CORS configuration
   const corsOptions = {
     origin: (origin, callback) => {
@@ -16,9 +16,9 @@ const setupCors = (app) => {
 
       // Check if the origin is in the allowed list (case-insensitive)
       const normalizedOrigin = origin.endsWith('/') ? origin.slice(0, -1) : origin;
-      
-      if (allowedOrigins.some(allowed => 
-        allowed.endsWith('/') 
+
+      if (allowedOrigins.some(allowed =>
+        allowed.endsWith('/')
           ? allowed.slice(0, -1).toLowerCase() === normalizedOrigin.toLowerCase()
           : allowed.toLowerCase() === normalizedOrigin.toLowerCase()
       )) {
@@ -61,7 +61,7 @@ const setupCors = (app) => {
 
   // Apply CORS middleware with our configuration
   app.use(cors(corsOptions));
-  
+
   // Handle preflight requests
   app.options('*', cors(corsOptions));
 

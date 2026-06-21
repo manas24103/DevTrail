@@ -52,10 +52,10 @@ export const AuthProvider = ({ children }) => {
       setError('');
       setLoading(true);
       const response = await authApi.login(email, password);
-      const { token, data: user } = response.data;
+      const { accessToken, user } = response;
       
       // Store the token in localStorage
-      localStorage.setItem('token', token);
+      localStorage.setItem('token', accessToken);
       
       // Set the current user
       setCurrentUser(user);

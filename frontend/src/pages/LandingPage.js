@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, TrendingUp, Calendar, Users, GitBranch, Award, Sparkles, ChevronDown, ChevronUp, Search, RefreshCw, Check, Terminal, MessageSquare, Plus } from 'lucide-react';
+import { ArrowRight, TrendingUp, Calendar, GitBranch, Award, Sparkles, ChevronDown, ChevronUp, Terminal, MessageSquare } from 'lucide-react';
 import { useAuthMode } from '../contexts/AuthModeContext';
 import { useAuth } from '../contexts/AuthContext';
 import Header from '../components/Header';

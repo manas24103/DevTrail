@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Moon, User, Search, MessageSquare, Eye, ThumbsUp, Send, Plus, Hash, TrendingUp } from 'lucide-react';
+import { Moon, User, Search, MessageSquare, Plus } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Footer from '../components/Footer';
 
 const CATEGORIES = ['All', 'Technical', 'Career', 'Contests'];
@@ -61,8 +61,7 @@ const RELATED = [
 ];
 
 export default function DiscussionsPage() {
-  const { currentUser, logout } = useAuth();
-  const navigate = useNavigate();
+  const { currentUser } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [selectedThread, setSelectedThread] = useState(MOCK_THREADS[0]);

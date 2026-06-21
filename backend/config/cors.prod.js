@@ -1,16 +1,9 @@
 import cors from 'cors';
 
 const setupCors = (app) => {
-  // Allowed origins - add your production URLs here
-  const allowedOrigins = [
-    'http://localhost:3000',
-    'http://localhost:5173',
-    'http://localhost:3001',
-    'https://cura-mind-nine.vercel.app',
-    'https://cura-rust.onrender.com',
-    'https://cura-mind.vercel.app',
-    'https://cura-mind.vercel.app/'
-  ];
+  const allowedOrigins = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+    : [];
 
   // CORS configuration
   const corsOptions = {

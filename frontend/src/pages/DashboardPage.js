@@ -31,8 +31,8 @@ const DashboardPage = () => {
     return (
       <>
         <Header />
-        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 flex items-center justify-center">
-          <div className="glass-card p-8 text-center">
+        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 flex items-center justify-center font-sora">
+          <div className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/10 rounded-3xl p-8 text-center shadow-2xl">
             <div className="text-6xl mb-4">⚠️</div>
             <div className="text-red-400 font-semibold">Error loading dashboard</div>
             <div className="text-slate-400 text-sm mt-2">{error.message}</div>
@@ -58,7 +58,7 @@ const DashboardStats = ({ stats, isLoading }) => {
     return (
       <>
         <Header />
-        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 flex items-center justify-center">
+        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 flex items-center justify-center font-sora">
           <div className="relative">
             <div className="w-24 h-24 rounded-full border-4 border-indigo-500/20 border-t-indigo-500 animate-spin" />
             <div className="absolute inset-0 w-24 h-24 rounded-full border-4 border-purple-500/20 border-t-purple-500 animate-spin-reverse" />
@@ -126,7 +126,7 @@ const DashboardStats = ({ stats, isLoading }) => {
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 relative overflow-hidden">
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 relative overflow-hidden font-sora">
         {/* Animated Background Elements */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[120px] animate-float" />
@@ -146,7 +146,7 @@ const DashboardStats = ({ stats, isLoading }) => {
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-12 space-y-8">
           {/* Header with Glass Effect */}
-          <div className="glass-header p-6 md:p-8 animate-slide-down">
+          <div className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/10 rounded-3xl p-6 md:p-8 shadow-2xl animate-slide-down">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div>
                 <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-white via-indigo-200 to-purple-200 bg-clip-text text-transparent mb-2">
@@ -156,7 +156,7 @@ const DashboardStats = ({ stats, isLoading }) => {
                   Track your coding journey across platforms with real-time analytics
                 </p>
               </div>
-              <button className="glass-button group">
+              <button className="flex items-center gap-2 px-6 py-3 bg-indigo-500/10 backdrop-blur-md border border-indigo-500/30 rounded-xl text-indigo-200 text-sm font-semibold cursor-pointer transition-all duration-300 hover:bg-indigo-500/20 hover:border-indigo-500/50 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-indigo-500/30">
                 <Zap className="w-4 h-4 group-hover:text-yellow-400 transition-colors" />
                 <span>Sync Data</span>
               </button>
@@ -198,16 +198,16 @@ const DashboardStats = ({ stats, isLoading }) => {
           {/* Chart Cards */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Difficulty Distribution */}
-            <div className="glass-card animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
-              <div className="card-header">
+            <div className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/10 rounded-3xl p-7 shadow-2xl transition-all duration-300 hover:border-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/20 animate-fade-in-up opacity-0" style={{ animationDelay: '0.5s' }}>
+              <div className="flex justify-between items-start mb-6">
                 <div>
-                  <h3 className="card-title">Difficulty Distribution</h3>
-                  <p className="card-subtitle">
+                  <h3 className="text-lg font-bold text-slate-100 mb-1">Difficulty Distribution</h3>
+                  <p className="text-sm text-slate-400">
                     Your solved problems across difficulty levels
                   </p>
                 </div>
-                <div className="glass-badge">
-                  <span className="pulse-dot" />
+                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-lg text-xs font-semibold text-indigo-300 uppercase tracking-wide">
+                  <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse-dot" />
                   Live
                 </div>
               </div>
@@ -263,16 +263,16 @@ const DashboardStats = ({ stats, isLoading }) => {
             </div>
 
             {/* Platform Comparison */}
-            <div className="glass-card animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
-              <div className="card-header">
+            <div className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/10 rounded-3xl p-7 shadow-2xl transition-all duration-300 hover:border-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/20 animate-fade-in-up opacity-0" style={{ animationDelay: '0.6s' }}>
+              <div className="flex justify-between items-start mb-6">
                 <div>
-                  <h3 className="card-title">Platform Comparison</h3>
-                  <p className="card-subtitle">
+                  <h3 className="text-lg font-bold text-slate-100 mb-1">Platform Comparison</h3>
+                  <p className="text-sm text-slate-400">
                     Compare progress across different platforms
                   </p>
                 </div>
-                <div className="glass-badge">
-                  <span className="pulse-dot bg-purple-500" />
+                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-lg text-xs font-semibold text-indigo-300 uppercase tracking-wide">
+                  <span className="w-1.5 h-1.5 bg-purple-500 rounded-full animate-pulse-dot" />
                   Active
                 </div>
               </div>
@@ -320,15 +320,15 @@ const DashboardStats = ({ stats, isLoading }) => {
           </div>
 
           {/* Focus Areas - Enhanced Design */}
-          <div className="glass-card animate-fade-in-up" style={{ animationDelay: '0.7s' }}>
-            <div className="card-header mb-6">
+          <div className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/10 rounded-3xl p-7 shadow-2xl transition-all duration-300 hover:border-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/20 animate-fade-in-up opacity-0" style={{ animationDelay: '0.7s' }}>
+            <div className="flex justify-between items-start mb-6">
               <div>
-                <h3 className="card-title">Focus Areas</h3>
-                <p className="card-subtitle">
+                <h3 className="text-lg font-bold text-slate-100 mb-1">Focus Areas</h3>
+                <p className="text-sm text-slate-400">
                   Topics where you can level up your skills
                 </p>
               </div>
-              <div className="glass-badge">
+              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-lg text-xs font-semibold text-indigo-300 uppercase tracking-wide">
                 <span className="text-xs">6 Topics</span>
               </div>
             </div>
@@ -337,12 +337,12 @@ const DashboardStats = ({ stats, isLoading }) => {
               {weakAreas.map(({ topic, score, icon }, index) => (
                 <div
                   key={topic}
-                  className="topic-card group"
+                  className="bg-slate-800/40 backdrop-blur-md border border-slate-700/10 rounded-2xl p-5 transition-all duration-300 hover:bg-slate-800/60 hover:border-indigo-500/30 hover:-translate-y-1 hover:shadow-lg hover:shadow-black/30 animate-fade-in-up opacity-0 group"
                   style={{ animationDelay: `${0.8 + index * 0.1}s` }}
                 >
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-3">
-                      <div className="topic-icon">
+                      <div className="w-10 h-10 flex items-center justify-center bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-lg transition-all duration-300 group-hover:bg-indigo-500/20 group-hover:scale-110 group-hover:rotate-3">
                         {icon}
                       </div>
                       <span className="text-sm font-semibold text-slate-200">
@@ -353,7 +353,7 @@ const DashboardStats = ({ stats, isLoading }) => {
                       <span className="text-xs font-bold text-indigo-400">
                         {score}%
                       </span>
-                      <div className={`mastery-badge ${
+                      <div className={`px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wide ${
                         score >= 75 ? 'bg-emerald-500/20 text-emerald-400' :
                         score >= 60 ? 'bg-amber-500/20 text-amber-400' :
                         'bg-rose-500/20 text-rose-400'
@@ -363,9 +363,9 @@ const DashboardStats = ({ stats, isLoading }) => {
                     </div>
                   </div>
                   
-                  <div className="progress-container">
+                  <div className="w-full h-2 bg-slate-800/60 rounded-xl overflow-hidden relative">
                     <div
-                      className="progress-bar"
+                      className="h-full rounded-xl transition-all duration-1000 relative shadow-lg"
                       style={{ 
                         width: `${score}%`,
                         background: score >= 75 
@@ -374,7 +374,9 @@ const DashboardStats = ({ stats, isLoading }) => {
                           ? 'linear-gradient(90deg, #f59e0b, #fbbf24)'
                           : 'linear-gradient(90deg, #ef4444, #f87171)'
                       }}
-                    />
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer" />
+                    </div>
                   </div>
                 </div>
               ))}
@@ -382,239 +384,6 @@ const DashboardStats = ({ stats, isLoading }) => {
           </div>
         </div>
 
-        <style jsx>{`
-          @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;900&family=Sora:wght@300;400;500;600;700&display=swap');
-
-          * {
-            font-family: 'Sora', sans-serif;
-          }
-
-          .glass-header {
-            background: rgba(15, 23, 42, 0.4);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(148, 163, 184, 0.1);
-            border-radius: 24px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-          }
-
-          .glass-card {
-            background: rgba(15, 23, 42, 0.4);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(148, 163, 184, 0.1);
-            border-radius: 24px;
-            padding: 28px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease;
-          }
-
-          .glass-card:hover {
-            border-color: rgba(99, 102, 241, 0.3);
-            box-shadow: 0 12px 48px rgba(99, 102, 241, 0.2);
-          }
-
-          .glass-button {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 24px;
-            background: rgba(99, 102, 241, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            border-radius: 12px;
-            color: #e0e7ff;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-          }
-
-          .glass-button:hover {
-            background: rgba(99, 102, 241, 0.2);
-            border-color: rgba(99, 102, 241, 0.5);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
-          }
-
-          .glass-badge {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 12px;
-            background: rgba(99, 102, 241, 0.1);
-            border: 1px solid rgba(99, 102, 241, 0.2);
-            border-radius: 8px;
-            font-size: 11px;
-            font-weight: 600;
-            color: #c7d2fe;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-          }
-
-          .pulse-dot {
-            width: 6px;
-            height: 6px;
-            background: #6366f1;
-            border-radius: 50%;
-            animation: pulse-dot 2s ease-in-out infinite;
-          }
-
-          @keyframes pulse-dot {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(1.2); }
-          }
-
-          .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 24px;
-          }
-
-          .card-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #f1f5f9;
-            margin-bottom: 4px;
-          }
-
-          .card-subtitle {
-            font-size: 13px;
-            color: #94a3b8;
-          }
-
-          .topic-card {
-            background: rgba(30, 41, 59, 0.4);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(148, 163, 184, 0.1);
-            border-radius: 16px;
-            padding: 20px;
-            transition: all 0.3s ease;
-            animation: fade-in-up 0.6s ease forwards;
-            opacity: 0;
-          }
-
-          .topic-card:hover {
-            background: rgba(30, 41, 59, 0.6);
-            border-color: rgba(99, 102, 241, 0.3);
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-          }
-
-          .topic-icon {
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(99, 102, 241, 0.1);
-            border: 1px solid rgba(99, 102, 241, 0.2);
-            border-radius: 10px;
-            font-size: 18px;
-            transition: all 0.3s ease;
-          }
-
-          .topic-card:hover .topic-icon {
-            background: rgba(99, 102, 241, 0.2);
-            transform: scale(1.1) rotate(5deg);
-          }
-
-          .mastery-badge {
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-          }
-
-          .progress-container {
-            width: 100%;
-            height: 8px;
-            background: rgba(30, 41, 59, 0.6);
-            border-radius: 8px;
-            overflow: hidden;
-            position: relative;
-          }
-
-          .progress-bar {
-            height: 100%;
-            border-radius: 8px;
-            transition: width 1s ease;
-            position: relative;
-            box-shadow: 0 0 20px currentColor;
-          }
-
-          .progress-bar::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            animation: shimmer 2s infinite;
-          }
-
-          @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-          }
-
-          @keyframes float {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(50px, -50px); }
-          }
-
-          @keyframes float-delayed {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(-50px, 50px); }
-          }
-
-          @keyframes pulse-slow {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 0.6; }
-          }
-
-          @keyframes slide-down {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-
-          @keyframes fade-in-up {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-
-          .animate-float {
-            animation: float 20s ease-in-out infinite;
-          }
-
-          .animate-float-delayed {
-            animation: float-delayed 25s ease-in-out infinite;
-          }
-
-          .animate-pulse-slow {
-            animation: pulse-slow 4s ease-in-out infinite;
-          }
-
-          .animate-slide-down {
-            animation: slide-down 0.6s ease forwards;
-          }
-
-          .animate-fade-in-up {
-            animation: fade-in-up 0.6s ease forwards;
-            opacity: 0;
-          }
-
-          .animate-spin-reverse {
-            animation: spin 1s linear infinite reverse;
-          }
-
-          @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-          }
-        `}</style>
       </div>
     </>
   );
@@ -622,7 +391,7 @@ const DashboardStats = ({ stats, isLoading }) => {
 
 const StatCard = ({ title, value, icon, gradient, delay }) => (
   <div 
-    className="glass-card group cursor-pointer animate-fade-in-up opacity-0 hover:scale-[1.02]"
+    className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/10 rounded-3xl p-7 shadow-2xl transition-all duration-300 hover:border-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/20 animate-fade-in-up opacity-0 hover:scale-[1.02] cursor-pointer group"
     style={{ animationDelay: delay }}
   >
     <div className="flex items-center justify-between">
@@ -630,7 +399,7 @@ const StatCard = ({ title, value, icon, gradient, delay }) => (
         <p className="text-[11px] font-bold tracking-wider text-slate-400 uppercase">
           {title}
         </p>
-        <p className="text-3xl md:text-4xl font-bold text-white font-['Orbitron']">
+        <p className="text-3xl md:text-4xl font-bold text-white font-orbitron">
           {value}
         </p>
       </div>

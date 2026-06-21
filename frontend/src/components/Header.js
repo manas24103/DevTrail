@@ -1,195 +1,185 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from '@clerk/clerk-react';
-import { Zap, Menu, X } from 'lucide-react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Zap, Menu, X, Moon, Sun } from 'lucide-react';
+import { useAuthMode } from '../contexts/AuthModeContext';
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+  const [isDarkMode, setIsDarkMode] = React.useState(false);
+  const { authMode, setAuthMode } = useAuthMode();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const navItems = [
+    { name: "Leaderboard", path: "/leaderboard" },
+    { name: "Question Tracker", path: "/tracker" },
+  ];
+
+  const isActive = (path) => {
+    return location.pathname === path;
+  };
 
   return (
-    <header className="glass-header fixed top-0 left-0 right-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <div className="flex items-center">
-            <Link to="/" className="flex items-center space-x-3 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                <Zap className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-white via-indigo-200 to-purple-200 bg-clip-text text-transparent">
-                DevTrail
-              </span>
-            </Link>
-          </div>
+    <header className="sticky top-0 z-50 bg-white/85 backdrop-blur-lg border-b border-gray-200/60 shadow-sm">
+      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center">
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-8">
-            <Link 
-              to="/" 
-              className="text-slate-300 hover:text-white px-3 py-2 text-sm font-medium transition-colors duration-200 hover:bg-white/10 rounded-lg"
-            >
-              Home
-            </Link>
-            <SignedIn>
-              <Link 
-                to="/dashboard" 
-                className="text-slate-300 hover:text-white px-3 py-2 text-sm font-medium transition-colors duration-200 hover:bg-white/10 rounded-lg"
-              >
-                Dashboard
-              </Link>
-              <Link 
-                to="/profile" 
-                className="text-slate-300 hover:text-white px-3 py-2 text-sm font-medium transition-colors duration-200 hover:bg-white/10 rounded-lg"
-              >
-                Profile
-              </Link>
-            </SignedIn>
+        {/* Logo */}
+        <Link to="/" className="group flex items-center gap-3 text-lg font-semibold transition-all duration-300 hover:scale-105">
+          <div className="w-8 h-8 bg-gradient-to-br from-teal-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-teal-500/25 transition-all duration-300">
+            <Zap size={16} className="text-white" />
+          </div>
+          <span className="bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">DevTrail</span>
+        </Link>
+
+        {/* Right Section */}
+        <div className="hidden md:flex items-center gap-4 ml-auto">
+          {/* Desktop Nav */}
+          <nav className="flex items-center gap-4 text-sm font-medium">
+            {navItems.map((item, i) => (
+              <React.Fragment key={item.name}>
+                <Link
+                  to={item.path}
+                  className={`relative px-3 py-2 rounded-lg transition-all duration-300 ${
+                    isActive(item.path)
+                      ? "text-teal-600 bg-teal-50/50 font-semibold"
+                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                  }`}
+                >
+                  {item.name}
+
+                  {/* Active indicator */}
+                  {isActive(item.path) && (
+                    <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-0.5 bg-gradient-to-r from-teal-400 to-teal-600 rounded-full"></span>
+                  )}
+                </Link>
+
+                {i === 0 && (
+                  <span className="text-gray-300 select-none">|</span>
+                )}
+              </React.Fragment>
+            ))}
           </nav>
 
-          {/* Desktop Authentication */}
-          <div className="hidden md:flex items-center space-x-4">
-            <SignedOut>
-              <SignInButton mode="modal">
-                <button className="glass-button-sm">
-                  Sign In
-                </button>
-              </SignInButton>
-              <SignUpButton mode="modal">
-                <button className="glass-button-primary">
-                  Sign Up
-                </button>
-              </SignUpButton>
-            </SignedOut>
-            <SignedIn>
-              <UserButton 
-                appearance={{
-                  elements: {
-                    avatarBox: "w-10 h-10",
-                    userButtonPopoverCard: "glass-card",
-                    userButtonPopoverActionButton: "text-slate-300 hover:text-white",
-                  },
-                }}
-                afterSignOutUrl="/"
-              />
-            </SignedIn>
-          </div>
+          {/* Dark Mode Toggle */}
+          <button
+            onClick={() => setIsDarkMode(!isDarkMode)}
+            className="relative p-2.5 rounded-xl hover:bg-gray-100 transition-all duration-300 group"
+          >
+            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-gray-100 to-gray-200 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            {isDarkMode ? (
+              <Sun size={18} className="text-gray-600 relative z-10" />
+            ) : (
+              <Moon size={18} className="text-gray-600 relative z-10" />
+            )}
+          </button>
 
-          {/* Mobile menu button */}
-          <div className="md:hidden">
+          {/* Auth Toggle */}
+          <div className="flex items-center bg-gray-100/80 rounded-xl p-1 backdrop-blur-sm">
             <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="text-slate-300 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-colors duration-200"
+              onClick={() => { setAuthMode('login'); navigate('/auth'); }}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                authMode === 'login'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
             >
-              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              Login
+            </button>
+            <button
+              onClick={() => { setAuthMode('signup'); navigate('/auth'); }}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                authMode === 'signup'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Sign Up
             </button>
           </div>
         </div>
 
-        {/* Mobile Navigation */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden glass-card mt-2 rounded-2xl">
-            <div className="px-4 py-3 space-y-2">
-              <Link
-                to="/"
-                className="block text-slate-300 hover:text-white px-3 py-2 text-base font-medium rounded-lg hover:bg-white/10 transition-colors duration-200"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Home
-              </Link>
-              <SignedIn>
-                <Link
-                  to="/dashboard"
-                  className="block text-slate-300 hover:text-white px-3 py-2 text-base font-medium rounded-lg hover:bg-white/10 transition-colors duration-200"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Dashboard
-                </Link>
-                <Link
-                  to="/profile"
-                  className="block text-slate-300 hover:text-white px-3 py-2 text-base font-medium rounded-lg hover:bg-white/10 transition-colors duration-200"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Profile
-                </Link>
-              </SignedIn>
-              <SignedOut>
-                <div className="pt-4 border-t border-slate-700/50 space-y-3">
-                  <SignInButton mode="modal">
-                    <button className="w-full glass-button-sm" onClick={() => setIsMobileMenuOpen(false)}>
-                      Sign In
-                    </button>
-                  </SignInButton>
-                  <SignUpButton mode="modal">
-                    <button className="w-full glass-button-primary" onClick={() => setIsMobileMenuOpen(false)}>
-                      Sign Up
-                    </button>
-                  </SignUpButton>
-                </div>
-              </SignedOut>
-            </div>
-          </div>
-        )}
+        {/* Mobile Toggle */}
+        <div className="md:hidden ml-auto">
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="relative p-2.5 rounded-xl hover:bg-gray-100 transition-all duration-300 group"
+          >
+            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-gray-100 to-gray-200 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            {isMobileMenuOpen ? (
+              <X size={20} className="text-gray-600 relative z-10" />
+            ) : (
+              <Menu size={20} className="text-gray-600 relative z-10" />
+            )}
+          </button>
+        </div>
       </div>
 
-      <style jsx>{`
-        .glass-header {
-          background: rgba(15, 23, 42, 0.8);
-          backdrop-filter: blur(20px);
-          border-bottom: 1px solid rgba(148, 163, 184, 0.1);
-        }
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden border-t border-gray-200/60 bg-white/95 backdrop-blur-lg">
+          <div className="px-6 py-6 space-y-4">
+            {/* Mobile Navigation */}
+            <div className="space-y-2">
+              {navItems.map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.path}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`block px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 ${
+                    isActive(item.path)
+                      ? "text-teal-600 bg-teal-50/50 font-semibold"
+                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                  }`}
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </div>
 
-        .glass-card {
-          background: rgba(15, 23, 42, 0.9);
-          backdrop-filter: blur(20px);
-          border: 1px solid rgba(148, 163, 184, 0.1);
-        }
-
-        .glass-button-sm {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 8px 16px;
-          background: rgba(99, 102, 241, 0.1);
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(99, 102, 241, 0.3);
-          border-radius: 8px;
-          color: #e0e7ff;
-          font-size: 14px;
-          font-weight: 500;
-          cursor: pointer;
-          transition: all 0.3s ease;
-        }
-
-        .glass-button-sm:hover {
-          background: rgba(99, 102, 241, 0.2);
-          border-color: rgba(99, 102, 241, 0.5);
-          transform: translateY(-1px);
-        }
-
-        .glass-button-primary {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 8px 16px;
-          background: linear-gradient(135deg, rgba(99, 102, 241, 0.8), rgba(168, 85, 247, 0.8));
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(99, 102, 241, 0.5);
-          border-radius: 8px;
-          color: white;
-          font-size: 14px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-        }
-
-        .glass-button-primary:hover {
-          background: linear-gradient(135deg, rgba(99, 102, 241, 0.9), rgba(168, 85, 247, 0.9));
-          border-color: rgba(99, 102, 241, 0.7);
-          transform: translateY(-1px);
-          box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
-        }
-      `}</style>
+            {/* Mobile Auth Section */}
+            <div className="border-t border-gray-200/60 pt-4 space-y-3">
+              <div className="flex items-center bg-gray-100/80 rounded-xl p-1 backdrop-blur-sm">
+                <button
+                  onClick={() => {
+                    setAuthMode('login');
+                    navigate('/auth');
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                    authMode === 'login'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  Login
+                </button>
+                <button
+                  onClick={() => {
+                    setAuthMode('signup');
+                    navigate('/auth');
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                    authMode === 'signup'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  Sign Up
+                </button>
+              </div>
+              
+              {/* Dark Mode Toggle Mobile */}
+              <button
+                onClick={() => setIsDarkMode(!isDarkMode)}
+                className="w-full px-4 py-3 rounded-xl bg-gray-100/80 text-gray-600 hover:bg-gray-200/80 transition-all duration-300 backdrop-blur-sm"
+              >
+                {isDarkMode ? '🌙 Dark Mode' : '☀️ Light Mode'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 };

@@ -12,3 +12,12 @@ build/
 # OS
 .DS_Store
 Thumbs.db
+
+# Dependencies
+node_modules/
+
+# Environment files
+.env
+.env.*
+frontend/.env*
+backend/.env*

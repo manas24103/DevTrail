@@ -1,29 +1,28 @@
 import React from 'react';
+import { Globe, Mail } from 'lucide-react';
 
 const Footer = () => {
   return (
-    <footer className="border-t py-6 px-10 flex flex-col items-center gap-3.5 border-border-light bg-white" style={{ padding: '24px 40px' }}>
-      <p className="text-xs text-muted-text">
-        © 2026 DevTrail. All rights reserved.
-      </p>
-      <div className="flex gap-8">
-        {['Privacy Policy', 'Terms of Service', 'API Docs', 'Contact Support'].map(link => (
-          <a key={link} href="#" className="text-xs text-muted-text no-underline">
-            {link}
-          </a>
-        ))}
-      </div>
-      <div className="flex gap-3 text-muted-text">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-          <circle cx="12" cy="12" r="9"/>
-          <path d="M12 3c-3 4-3 14 0 18M12 3c3 4 3 14 0 18"/>
-          <line x1="3" y1="9" x2="21" y2="9"/>
-          <line x1="3" y1="15" x2="21" y2="15"/>
-        </svg>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-          <polyline points="22,6 12,13 2,6"/>
-        </svg>
+    <footer className="border-t border-gray-200/60 bg-white py-8 px-6">
+      <div className="max-w-7xl mx-auto flex flex-col items-center gap-4">
+        <p className="text-xs text-gray-400 font-medium">
+          © 2026 DevTrail. All rights reserved.
+        </p>
+        <div className="flex flex-wrap justify-center gap-6">
+          {['Privacy Policy', 'Terms of Service', 'API Docs', 'Contact Support'].map((link) => (
+            <a
+              key={link}
+              href="#"
+              className="text-xs text-gray-400 hover:text-teal-600 font-medium transition-colors duration-200"
+            >
+              {link}
+            </a>
+          ))}
+        </div>
+        <div className="flex gap-3 text-gray-400">
+          <Globe size={16} className="hover:text-teal-600 cursor-pointer transition-colors" />
+          <Mail size={16} className="hover:text-teal-600 cursor-pointer transition-colors" />
+        </div>
       </div>
     </footer>
   );

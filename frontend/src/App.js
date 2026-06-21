@@ -7,6 +7,7 @@ import DashboardPage from './pages/DashboardPage';
 import ProfilePage from './pages/ProfilePage';
 import LandingPage from './pages/LandingPage';
 import PlatformSetupPage from './pages/PlatformSetupPage';
+import DiscussionsPage from './pages/DiscussionsPage';
 import PrivateRoute from './components/PrivateRoute';
 
 function App() {
@@ -14,27 +15,20 @@ function App() {
     <AuthProvider>
       <AuthModeProvider>
         <Router>
-          <div className="min-h-screen bg-gray-50">
+          <div className="min-h-screen bg-[#f9fefc]">
             <Routes>
-              <Route path="/auth" element={<AuthPageWrapper />} />
-              <Route path="/platform-setup" element={<PlatformSetupPage />} />
-              <Route
-                path="/dashboard"
-                element={
-                  <PrivateRoute>
-                    <DashboardPage />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/profile"
-                element={
-                  <PrivateRoute>
-                    <ProfilePage />
-                  </PrivateRoute>
-                }
-              />
+              {/* Public Routes */}
               <Route path="/" element={<LandingPage />} />
+              <Route path="/auth" element={<AuthPageWrapper />} />
+              <Route path="/login" element={<AuthPageWrapper />} />
+              <Route path="/platform-setup" element={<PlatformSetupPage />} />
+
+              {/* Protected Routes */}
+              <Route path="/dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
+              <Route path="/profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
+              <Route path="/discussions" element={<PrivateRoute><DiscussionsPage /></PrivateRoute>} />
+
+              {/* Catch-all */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </div>

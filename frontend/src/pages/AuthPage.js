@@ -145,7 +145,7 @@ export default function AuthPage() {
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
                     <label className="text-[13px] font-semibold text-gray-700">Password</label>
-                    <a href="#" className="text-xs font-semibold text-teal-600 hover:underline">Forgot password?</a>
+                    <a href="/" className="text-xs font-semibold text-teal-600 hover:underline">Forgot password?</a>
                   </div>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
@@ -286,7 +286,7 @@ export default function AuthPage() {
                 <div className="flex items-start gap-2 text-[13px] text-gray-500">
                   <input type="checkbox" id="agree" checked={agreeTerms} onChange={(e) => setAgreeTerms(e.target.checked)} className="w-4 h-4 accent-teal-600 cursor-pointer rounded mt-0.5" />
                   <label htmlFor="agree" className="cursor-pointer leading-relaxed">
-                    I agree to the <a href="#" className="font-semibold text-teal-600 hover:underline">Terms of Service</a> and <a href="#" className="font-semibold text-teal-600 hover:underline">Privacy Policy</a>.
+                    I agree to the <a href="/terms" className="font-semibold text-teal-600 hover:underline">Terms of Service</a> and <a href="/privacy" className="font-semibold text-teal-600 hover:underline">Privacy Policy</a>.
                   </label>
                 </div>
 

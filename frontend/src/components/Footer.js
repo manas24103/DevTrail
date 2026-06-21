@@ -12,7 +12,7 @@ const Footer = () => {
           {['Privacy Policy', 'Terms of Service', 'API Docs', 'Contact Support'].map((link) => (
             <a
               key={link}
-              href="#"
+              href="/"
               className="text-xs text-gray-400 hover:text-teal-600 font-medium transition-colors duration-200"
             >
               {link}

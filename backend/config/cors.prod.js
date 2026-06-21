@@ -64,7 +64,7 @@ const setupCors = (app) => {
   app.use(cors(corsOptions));
 
   // Handle preflight requests
-  app.options('*', cors(corsOptions));
+  app.use(cors(corsOptions));
 
   // Log CORS headers for debugging
   app.use((req, res, next) => {

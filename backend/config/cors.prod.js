@@ -4,6 +4,7 @@ const setupCors = (app) => {
   const allowedOrigins = process.env.ALLOWED_ORIGINS
     ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
     : [];
+
   console.log("Allowed Origins:", allowedOrigins);
   // CORS configuration
   const corsOptions = {

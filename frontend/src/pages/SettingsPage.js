@@ -4,7 +4,7 @@ import { userApi } from '../services/api';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import Footer from '../components/Footer';
-import { User, Mail, Code2, Link as LinkIcon, FileText, GraduationCap, Github, Linkedin, Twitter, Globe, Save, CheckCircle, Sparkles } from 'lucide-react';
+import { User, Mail, Code2, Link as FileText, GraduationCap, Github, Linkedin, Twitter, Globe, Save, CheckCircle, Sparkles } from 'lucide-react';
 import Mascot from '../components/Mascot';
 
 const SettingsPage = () => {
@@ -89,9 +89,9 @@ const SettingsPage = () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
       console.error('Error saving settings:', err);
-      setMessage({ 
-        type: 'error', 
-        text: err.response?.data?.message || err.message || 'Failed to save settings.' 
+      setMessage({
+        type: 'error',
+        text: err.response?.data?.message || err.message || 'Failed to save settings.'
       });
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } finally {
@@ -110,7 +110,7 @@ const SettingsPage = () => {
         <Sidebar />
 
         {/* Settings Main Content */}
-        <main 
+        <main
           className="flex-1 relative border-l-[3px] border-black overflow-y-auto"
           style={{
             backgroundImage: 'radial-gradient(rgba(0,0,0,0.08) 1.5px, transparent 1.5px)',
@@ -126,10 +126,10 @@ const SettingsPage = () => {
           <div className="absolute bottom-24 left-10 w-20 h-20 rounded-full bg-[#E0F2FE] border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] animate-float-delayed pointer-events-none opacity-40 hidden xl:block" aria-hidden="true" />
 
           <div className="max-w-6xl mx-auto px-6 py-10 relative z-10">
-            
+
             {/* Grid Container */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-              
+
               {/* Left Column: Settings Page Header & Form */}
               <div className="lg:col-span-8 space-y-6">
                 {/* Page Header */}
@@ -145,11 +145,10 @@ const SettingsPage = () => {
 
                 {/* Alert Message */}
                 {message.text && (
-                  <div className={`mb-6 p-4 border-2 border-black flex items-center gap-3 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] uppercase text-xs font-black ${
-                    message.type === 'error' 
-                      ? 'bg-[#FFE0E6] text-black' 
+                  <div className={`mb-6 p-4 border-2 border-black flex items-center gap-3 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] uppercase text-xs font-black ${message.type === 'error'
+                      ? 'bg-[#FFE0E6] text-black'
                       : 'bg-emerald-100 text-emerald-800'
-                  }`} role="alert">
+                    }`} role="alert">
                     <CheckCircle size={16} className="stroke-[2.5]" />
                     <span>{message.text}</span>
                   </div>
@@ -157,13 +156,13 @@ const SettingsPage = () => {
 
                 {/* Settings Form */}
                 <form onSubmit={handleSubmit} className="bg-white border-[3px] border-black p-6 md:p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] space-y-8">
-                  
+
                   {/* Section 1: General Info */}
                   <div className="space-y-4">
                     <div className="border-b-2 border-black pb-2">
                       <h2 className="text-sm font-black text-black uppercase font-outfit">General Information</h2>
                     </div>
-                    
+
                     {/* Full Name */}
                     <div>
                       <label htmlFor="fullName" className="block text-xs font-black text-black uppercase mb-1.5">Full Name</label>
@@ -382,7 +381,7 @@ const SettingsPage = () => {
 
               {/* Right Column: Mascots & Tips */}
               <div className="lg:col-span-4 space-y-6">
-                
+
                 {/* Playful Interactive Coder Mascot */}
                 <Mascot />
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, TrendingUp, Calendar, GitBranch, Award, Sparkles, ChevronDown, ChevronUp, Terminal, MessageSquare, Code2, Star, Zap, ExternalLink } from 'lucide-react';
+import { ArrowRight, TrendingUp, Calendar, GitBranch, Award, Sparkles, ChevronDown, ChevronUp, MessageSquare, Code2, Zap, ExternalLink } from 'lucide-react';
 import { useAuthMode } from '../contexts/AuthModeContext';
 import { useAuth } from '../contexts/AuthContext';
 import Header from '../components/Header';

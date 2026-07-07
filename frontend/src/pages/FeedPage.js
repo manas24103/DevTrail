@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Trophy, Calendar, MessageSquare, Award, BookOpen, ShoppingBag, Tag, ExternalLink, Zap, Code2, ArrowRight } from 'lucide-react';
+import { Trophy, MessageSquare, Award, BookOpen, ShoppingBag, Tag, Zap, Code2, ArrowRight } from 'lucide-react';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import Footer from '../components/Footer';
@@ -94,13 +94,13 @@ const FeedPage = () => {
   return (
     <div className="min-h-screen bg-[#FAF6F0] font-jakarta flex flex-col">
       <Header />
-      
+
       <div className="flex flex-1">
         {/* Left Navigation Sidebar */}
         <Sidebar />
 
         {/* Main Feed Content Area */}
-        <main 
+        <main
           className="flex-1 border-l-[3px] border-black overflow-y-auto relative"
           style={{
             backgroundImage: 'radial-gradient(rgba(0,0,0,0.08) 1.5px, transparent 1.5px)',
@@ -113,12 +113,12 @@ const FeedPage = () => {
             &lt;/&gt;
           </div>
           <div className="max-w-6xl mx-auto px-6 py-8 relative z-10">
-            
+
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-              
+
               {/* Left Column: Feed List */}
               <div className="lg:col-span-8 space-y-6">
-                
+
                 {/* Section Header */}
                 <div className="flex items-center justify-between border-b-2 border-black pb-4">
                   <div>
@@ -137,8 +137,8 @@ const FeedPage = () => {
                 {/* Feed Items */}
                 <div className="space-y-6">
                   {FEED_ITEMS.map((item) => (
-                    <div 
-                      key={item.id} 
+                    <div
+                      key={item.id}
                       className="bg-white border-[3px] border-black p-5 md:p-6 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] hover:shadow-[7px_7px_0px_0px_rgba(0,0,0,1)] transition-all duration-150 relative"
                     >
                       {/* Top Meta info */}
@@ -160,7 +160,7 @@ const FeedPage = () => {
                       <h3 className="text-lg md:text-xl font-black text-black uppercase tracking-tight mb-2 hover:text-[#FF3366] transition-colors">
                         {item.title}
                       </h3>
-                      
+
                       <p className="text-xs font-semibold text-gray-700 leading-relaxed mb-4 uppercase">
                         {item.description}
                       </p>
@@ -168,14 +168,14 @@ const FeedPage = () => {
                       {/* Action Button */}
                       <div>
                         {item.link ? (
-                          <Link 
+                          <Link
                             to={item.link}
                             className="inline-flex items-center gap-2 px-4 py-2 border-2 border-black bg-white text-black text-[10px] font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all uppercase"
                           >
                             {item.buttonLabel} <ArrowRight size={12} strokeWidth={3} />
                           </Link>
                         ) : (
-                          <button 
+                          <button
                             onClick={() => {
                               if (item.type === 'contest') {
                                 navigate('/contests');
@@ -198,7 +198,7 @@ const FeedPage = () => {
               {/* Right Column: Widgets */}
               <div className="lg:col-span-4 space-y-6">
                 <Mascot />
-                
+
                 {/* Promo Card: DSA Crash Course */}
                 <div className="border-[3px] border-black bg-[#FFF0F3] p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                   <div className="flex items-center justify-between mb-3">
@@ -216,7 +216,7 @@ const FeedPage = () => {
                   <p className="text-[10px] font-bold text-gray-500 mb-4 uppercase">
                     {SIDEBAR_WIDGETS.course.desc}
                   </p>
-                  <button 
+                  <button
                     onClick={() => navigate('/problems')}
                     className="w-full py-2 border-2 border-black bg-[#FF3366] text-white text-[10px] font-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all uppercase"
                   >
@@ -235,7 +235,7 @@ const FeedPage = () => {
                   <p className="text-[10px] font-bold text-gray-500 mb-4 uppercase">
                     {SIDEBAR_WIDGETS.contest.desc}
                   </p>
-                  <button 
+                  <button
                     onClick={() => navigate('/contests')}
                     className="w-full py-2 border-2 border-black bg-white text-black text-[10px] font-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all uppercase"
                   >
@@ -254,7 +254,7 @@ const FeedPage = () => {
                   <p className="text-[10px] font-bold text-gray-500 mb-4 uppercase">
                     {SIDEBAR_WIDGETS.discuss.desc}
                   </p>
-                  <Link 
+                  <Link
                     to={SIDEBAR_WIDGETS.discuss.link}
                     className="block text-center w-full py-2 border-2 border-black bg-white text-black text-[10px] font-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all uppercase"
                   >
@@ -276,7 +276,7 @@ const FeedPage = () => {
                   <p className="text-[10px] font-bold text-gray-500 mb-4 uppercase">
                     {SIDEBAR_WIDGETS.store.desc}
                   </p>
-                  <button 
+                  <button
                     onClick={() => alert('DevTrail Rewards Store is coming soon in beta!')}
                     className="w-full py-2 border-2 border-black bg-[#FFD700] text-black text-[10px] font-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all uppercase"
                   >

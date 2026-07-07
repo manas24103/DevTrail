@@ -12,7 +12,7 @@ const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const isActive = (path) => location.pathname === path;
+  //const isActive = (path) => location.pathname === path;
 
   const handleLogout = () => {
     logout();

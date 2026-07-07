@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { authApi, api } from '../services/api';
+import { authApi } from '../services/api';
 
 const AuthContext = createContext();
 
@@ -53,21 +53,21 @@ export const AuthProvider = ({ children }) => {
       setError('');
       const response = await authApi.login(email, password);
       const { accessToken, user } = response;
-      
+
       // Store the token in localStorage
       localStorage.setItem('token', accessToken);
-      
+
       // Set the current user
       setCurrentUser(user);
-      
+
       return { success: true, user };
     } catch (err) {
       console.error('Login error:', err);
       const errorMessage = err.message || 'Login failed. Please check your credentials.';
       setError(errorMessage);
-      return { 
-        success: false, 
-        error: errorMessage 
+      return {
+        success: false,
+        error: errorMessage
       };
     }
   };
@@ -76,7 +76,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       setError('');
-      
+
       const payload = {
         fullName: userData.name,
         email: userData.email,
@@ -85,7 +85,7 @@ export const AuthProvider = ({ children }) => {
 
       const response = await authApi.register(payload);
       console.log('Registration response:', response);
-      
+
       // Handle successful registration: extract token and user details
       const token = response?.accessToken || response?.token;
       const user = response?.user || response;
@@ -103,9 +103,9 @@ export const AuthProvider = ({ children }) => {
     } catch (err) {
       const errorMessage = err.message || 'Registration failed. Please try again.';
       setError(errorMessage);
-      return { 
-        success: false, 
-        error: errorMessage 
+      return {
+        success: false,
+        error: errorMessage
       };
     }
   };
@@ -114,7 +114,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     // Remove the token from localStorage
     localStorage.removeItem('token');
-    
+
     // Clear the current user
     setCurrentUser(null);
   };
@@ -131,9 +131,9 @@ export const AuthProvider = ({ children }) => {
       return { success: true };
     } catch (err) {
       console.error('Error updating profile:', err);
-      return { 
-        success: false, 
-        error: err.response?.data?.message || 'Failed to update profile' 
+      return {
+        success: false,
+        error: err.response?.data?.message || 'Failed to update profile'
       };
     }
   };

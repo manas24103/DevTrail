@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Search, MessageSquare, Plus, User, X } from 'lucide-react';
+import { Search, Plus, User, X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import Footer from '../components/Footer';
@@ -27,7 +26,7 @@ export default function DiscussionsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [selectedThread, setSelectedThread] = useState(null);
-  
+
   const [threads, setThreads] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -63,7 +62,7 @@ export default function DiscussionsPage() {
     }, 300);
 
     return () => clearTimeout(delayDebounce);
-  }, [activeCategory, searchQuery]);
+  }, [activeCategory, searchQuery, fetchThreads]);
 
   // Reply submit handler
   const handlePostReply = async (e) => {
@@ -146,7 +145,7 @@ export default function DiscussionsPage() {
           <div className="p-4 border-b-2 border-black">
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-xl font-black text-black font-outfit uppercase">Discussions</h2>
-              <button 
+              <button
                 onClick={() => setShowCreateModal(true)}
                 className="p-1.5 border-2 border-black bg-[#E0F2FE] hover:bg-white text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center justify-center rounded"
                 title="Create New Thread"
@@ -171,11 +170,10 @@ export default function DiscussionsPage() {
                 <button
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
-                  className={`px-3 py-1.5 border-2 border-black font-black text-xs transition-all ${
-                    activeCategory === cat
-                      ? 'bg-[#FF3366] text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
-                      : 'bg-white text-black hover:bg-gray-50'
-                  }`}
+                  className={`px-3 py-1.5 border-2 border-black font-black text-xs transition-all ${activeCategory === cat
+                    ? 'bg-[#FF3366] text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
+                    : 'bg-white text-black hover:bg-gray-50'
+                    }`}
                 >
                   {cat.toUpperCase()}
                 </button>
@@ -198,9 +196,8 @@ export default function DiscussionsPage() {
                 <button
                   key={thread._id}
                   onClick={() => handleSelectThread(thread)}
-                  className={`w-full text-left p-4 border-b-2 border-black transition-all flex gap-3 ${
-                    selectedThread?._id === thread._id ? 'bg-[#FFF0F3] border-l-4 border-l-[#FF3366]' : 'bg-white hover:bg-gray-50'
-                  }`}
+                  className={`w-full text-left p-4 border-b-2 border-black transition-all flex gap-3 ${selectedThread?._id === thread._id ? 'bg-[#FFF0F3] border-l-4 border-l-[#FF3366]' : 'bg-white hover:bg-gray-50'
+                    }`}
                 >
                   <div className="w-8 h-8 rounded-md bg-[#E0F2FE] border-2 border-black flex items-center justify-center flex-shrink-0 mt-0.5">
                     <User size={14} className="text-black stroke-[2.5]" />
@@ -244,11 +241,10 @@ export default function DiscussionsPage() {
                   </div>
                 </div>
                 {/* Upvote Button */}
-                <button 
+                <button
                   onClick={handleToggleUpvote}
-                  className={`px-4 py-2 border-2 border-black font-black text-xs shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center gap-1.5 uppercase ${
-                    selectedThread.upvotes?.includes(currentUser?._id) ? 'bg-[#FF3366] text-white' : 'bg-[#E0F2FE] text-black'
-                  }`}
+                  className={`px-4 py-2 border-2 border-black font-black text-xs shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center gap-1.5 uppercase ${selectedThread.upvotes?.includes(currentUser?._id) ? 'bg-[#FF3366] text-white' : 'bg-[#E0F2FE] text-black'
+                    }`}
                 >
                   👍 UPVOTE ({selectedThread.upvotes?.length || 0})
                 </button>
@@ -258,7 +254,7 @@ export default function DiscussionsPage() {
               {selectedThread.body && (
                 <div className="bg-white border-[3px] border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden">
                   {/* Floating drifting backgrounds */}
-                  <div 
+                  <div
                     className="absolute text-4xl opacity-[0.25] pointer-events-none select-none z-10"
                     style={{
                       animation: 'float-random-custom 14s ease-in-out infinite',
@@ -269,7 +265,7 @@ export default function DiscussionsPage() {
                   >
                     🐘
                   </div>
-                  <div 
+                  <div
                     className="absolute text-4xl opacity-[0.25] pointer-events-none select-none z-10"
                     style={{
                       animation: 'float-random-custom 18s ease-in-out infinite',
@@ -289,7 +285,7 @@ export default function DiscussionsPage() {
               {selectedThread.replies?.map((reply, idx) => (
                 <div key={idx} className="bg-white border-[3px] border-black p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden">
                   {/* Floating drift shape */}
-                  <div 
+                  <div
                     className="absolute text-3xl opacity-[0.2] pointer-events-none select-none z-10"
                     style={{
                       animation: 'float-random-custom 15s ease-in-out infinite',
@@ -378,37 +374,37 @@ export default function DiscussionsPage() {
                 </div>
               </div>
             </div>
-            ) : (
-              <div 
-                className="flex-1 flex flex-col items-center justify-center p-8 text-center relative overflow-hidden"
-                style={{
-                  backgroundImage: 'radial-gradient(rgba(0,0,0,0.06) 1.5px, transparent 1.5px)',
-                  backgroundSize: '20px 20px',
-                  backgroundColor: '#FAF6F0'
-                }}
-              >
-                <div className="max-w-md w-full bg-white border-[3px] border-black p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center space-y-5 animate-scale-in">
-                  {/* Lottie Animation Wrapper Card */}
-                  <div className="w-44 h-44 mx-auto bg-[#E0F2FE] border-2 border-black rounded-xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] overflow-hidden flex items-center justify-center p-2">
-                    <DotLottieReact
-                      src="https://lottie.host/17e8ce22-cc0d-4dc3-8eeb-27f77a3d738f/WzgFOqKEoP.json"
-                      loop
-                      autoplay
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-lg font-black text-black font-outfit uppercase tracking-tight">
-                      Select a Discussion
-                    </h3>
-                    <p className="text-[10px] font-bold text-gray-500 uppercase mt-1 leading-relaxed max-w-sm mx-auto">
-                      Click on any discussion thread in the list on the left to read posts, view replies, and contribute to the community!
-                    </p>
-                  </div>
+          ) : (
+            <div
+              className="flex-1 flex flex-col items-center justify-center p-8 text-center relative overflow-hidden"
+              style={{
+                backgroundImage: 'radial-gradient(rgba(0,0,0,0.06) 1.5px, transparent 1.5px)',
+                backgroundSize: '20px 20px',
+                backgroundColor: '#FAF6F0'
+              }}
+            >
+              <div className="max-w-md w-full bg-white border-[3px] border-black p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center space-y-5 animate-scale-in">
+                {/* Lottie Animation Wrapper Card */}
+                <div className="w-44 h-44 mx-auto bg-[#E0F2FE] border-2 border-black rounded-xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] overflow-hidden flex items-center justify-center p-2">
+                  <DotLottieReact
+                    src="https://lottie.host/17e8ce22-cc0d-4dc3-8eeb-27f77a3d738f/WzgFOqKEoP.json"
+                    loop
+                    autoplay
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+
+                <div>
+                  <h3 className="text-lg font-black text-black font-outfit uppercase tracking-tight">
+                    Select a Discussion
+                  </h3>
+                  <p className="text-[10px] font-bold text-gray-500 uppercase mt-1 leading-relaxed max-w-sm mx-auto">
+                    Click on any discussion thread in the list on the left to read posts, view replies, and contribute to the community!
+                  </p>
                 </div>
               </div>
-            )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -418,7 +414,7 @@ export default function DiscussionsPage() {
       {showCreateModal && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-[#FAF6F0] border-[3px] border-black p-6 w-full max-w-lg shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-black relative">
-            <button 
+            <button
               onClick={() => setShowCreateModal(false)}
               className="absolute top-4 right-4 p-1.5 border-2 border-black bg-white hover:bg-gray-100 rounded text-black flex items-center justify-center"
               aria-label="Close modal"
@@ -429,7 +425,7 @@ export default function DiscussionsPage() {
             <form onSubmit={handleCreateThread} className="space-y-4">
               <div>
                 <label className="block text-xs font-black uppercase text-gray-700 mb-1">Title</label>
-                <input 
+                <input
                   type="text"
                   required
                   placeholder="E.g., Dijkstra Optimization Tips"
@@ -462,14 +458,14 @@ export default function DiscussionsPage() {
                 />
               </div>
               <div className="flex justify-end gap-3 pt-2">
-                <button 
+                <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
                   className="px-4 py-2 border-2 border-black bg-white text-black text-xs font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-gray-100 uppercase"
                 >
                   CANCEL
                 </button>
-                <button 
+                <button
                   type="submit"
                   className="px-5 py-2 border-2 border-black bg-[#FF3366] text-white text-xs font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] uppercase"
                 >

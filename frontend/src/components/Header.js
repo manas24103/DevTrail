@@ -10,7 +10,7 @@ const Header = () => {
   const { isAuthenticated, currentUser, logout } = useAuth();
   const { setAuthMode } = useAuthMode();
   const navigate = useNavigate();
-  const location = useLocation();
+  //const location = useLocation();
 
   //const isActive = (path) => location.pathname === path;
 

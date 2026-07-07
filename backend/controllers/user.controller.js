@@ -69,11 +69,10 @@ const registerUser = asyncHandler(async (req, res) => {
     }
   });
 
-  try {
-    await sendWelcomeEmail(user.email, user.fullName);
-  } catch (error) {
-    console.error('Failed to send welcome email:', error);
-  }
+  // Send welcome email in background to prevent SMTP latency from blocking HTTP response
+  sendWelcomeEmail(user.email, user.fullName).catch(error => {
+    console.error('Failed to send welcome email in background:', error);
+  });
 
   const createdUser = await User.findById(user._id).select(
     "-password -refreshToken"

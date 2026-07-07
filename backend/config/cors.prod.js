@@ -61,9 +61,6 @@ const setupCors = (app) => {
   // Apply CORS middleware with our configuration
   app.use(cors(corsOptions));
 
-  // Handle preflight requests
-  app.use(cors(corsOptions));
-
   // Log CORS headers for debugging
   app.use((req, res, next) => {
     console.log('CORS Request:', {

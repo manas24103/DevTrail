@@ -7,12 +7,20 @@ export const getDashboard = asyncHandler(async (req, res) => {
     userId: req.user._id
   });
 
-  // No stats yet
-  if (!stats.length) {
+  // Only count verified platform stats in aggregation
+  const verifiedStats = stats.filter(s => {
+    if (s.platform === "leetcode") return !!req.user.handles?.lcVerified;
+    if (s.platform === "codeforces") return !!req.user.handles?.cfVerified;
+    return true;
+  });
+
+  // No verified stats yet
+  if (!verifiedStats.length) {
     return res.json(
       new ApiResponse(200, {
         view: "all",
         totalSolved: 0,
+        totalContests: 0,
         difficulty: { easy: 0, medium: 0, hard: 0 },
         platforms: {},
         handles: req.user.handles
@@ -25,7 +33,7 @@ export const getDashboard = asyncHandler(async (req, res) => {
   const difficulty = { easy: 0, medium: 0, hard: 0 };
   const platforms = {};
 
-  for (const s of stats) {
+  for (const s of verifiedStats) {
     // total solved
     totalSolved += s.solvedCount;
     totalContests += (s.contestsCount || 0);

@@ -47,6 +47,7 @@
 import dotenv from "dotenv";
 import app from "./app.js";
 import connectDB from "./config/db.js";
+import { initCleanupScheduler } from "./services/cleanup.service.js";
 
 dotenv.config();
 
@@ -55,6 +56,9 @@ const PORT=process.env.PORT || 5000;
 const startServer = async () => {
     try {
         await connectDB();
+        // Initialize background inactivity cleanup scheduler
+        initCleanupScheduler();
+
         app.listen(PORT, () => {
             console.log(`🚀 Server running on port ${PORT}`);
         });

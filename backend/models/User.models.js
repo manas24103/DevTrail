@@ -31,7 +31,14 @@ const userSchema = new mongoose.Schema({
     codeforces:{type: String, default: ''},
     leetcode:{type: String, default: ''},
     codechef:{type: String, default: ''},
-    gfg:{type: String, default: ''}
+    gfg:{type: String, default: ''},
+    cfVerified:{type: Boolean, default: false},
+    lcVerified:{type: Boolean, default: false},
+    verificationToken:{type: String, default: ''}
+  },
+  lastActivity: {
+    type: Date,
+    default: Date.now
   },
   refreshToken: {
     type: String

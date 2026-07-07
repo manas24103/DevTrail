@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, User, X } from 'lucide-react';
+import { Search, Plus, User, X, Trash2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
@@ -123,6 +123,34 @@ export default function DiscussionsPage() {
     }
   };
 
+  // Delete thread handler (creator-only)
+  const handleDeleteThread = async () => {
+    if (!selectedThread) return;
+    if (!window.confirm("Are you sure you want to delete this thread? This action cannot be undone.")) return;
+    try {
+      await discussionsApi.deleteThread(selectedThread._id);
+      setSelectedThread(null);
+      fetchThreads();
+    } catch (err) {
+      console.error("Error deleting thread:", err);
+      alert(err.response?.data?.message || "Failed to delete thread");
+    }
+  };
+
+  // Delete reply comment handler (creator-only)
+  const handleDeleteReply = async (replyId) => {
+    if (!selectedThread) return;
+    if (!window.confirm("Are you sure you want to delete this comment?")) return;
+    try {
+      const updated = await discussionsApi.deleteReply(selectedThread._id, replyId);
+      setSelectedThread(updated);
+      fetchThreads();
+    } catch (err) {
+      console.error("Error deleting reply:", err);
+      alert(err.response?.data?.message || "Failed to delete comment");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white font-jakarta flex flex-col">
       <style>{`
@@ -240,14 +268,26 @@ export default function DiscussionsPage() {
                     <span className="text-xs font-bold text-gray-500 uppercase">POSTED {new Date(selectedThread.createdAt).toLocaleDateString()} IN {selectedThread.category.toUpperCase()}</span>
                   </div>
                 </div>
-                {/* Upvote Button */}
-                <button
-                  onClick={handleToggleUpvote}
-                  className={`px-4 py-2 border-2 border-black font-black text-xs shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center gap-1.5 uppercase ${selectedThread.upvotes?.includes(currentUser?._id) ? 'bg-[#FF3366] text-white' : 'bg-[#E0F2FE] text-black'
-                    }`}
-                >
-                  👍 UPVOTE ({selectedThread.upvotes?.length || 0})
-                </button>
+                <div className="flex items-center gap-3">
+                  {/* Upvote Button */}
+                  <button
+                    onClick={handleToggleUpvote}
+                    className={`px-4 py-2 border-2 border-black font-black text-xs shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center gap-1.5 uppercase ${selectedThread.upvotes?.includes(currentUser?._id) ? 'bg-[#FF3366] text-white' : 'bg-[#E0F2FE] text-black'
+                      }`}
+                  >
+                    👍 UPVOTE ({selectedThread.upvotes?.length || 0})
+                  </button>
+
+                  {/* Delete Button */}
+                  {(selectedThread.author?._id === currentUser?._id || selectedThread.author === currentUser?._id) && (
+                    <button
+                      onClick={handleDeleteThread}
+                      className="px-4 py-2 border-2 border-black bg-[#FFE0E6] text-black font-black text-xs shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:bg-[#FF3366] hover:text-white hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center gap-1.5 uppercase"
+                    >
+                      🗑️ Delete
+                    </button>
+                  )}
+                </div>
               </div>
 
               {/* Thread body */}
@@ -305,6 +345,19 @@ export default function DiscussionsPage() {
                     <span className="text-[10px] font-semibold text-gray-400 uppercase">
                       {reply.createdAt ? new Date(reply.createdAt).toLocaleDateString() : ''}
                     </span>
+
+                    {/* Delete Reply Button */}
+                    {(reply.author?._id === currentUser?._id || reply.author === currentUser?._id) && (
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteReply(reply._id)}
+                        className="ml-auto text-gray-400 hover:text-[#FF3366] transition-colors flex items-center gap-1 text-[9px] font-black uppercase"
+                        title="Delete Comment"
+                      >
+                        <Trash2 size={12} />
+                        Delete
+                      </button>
+                    )}
                   </div>
                   <p className="text-sm font-semibold text-black leading-relaxed uppercase relative z-20">{reply.body}</p>
                 </div>

@@ -4,7 +4,9 @@ import {
   createThread, 
   postReply, 
   toggleUpvote, 
-  incrementViews 
+  incrementViews,
+  deleteThread,
+  deleteReply
 } from '../controllers/discussions.controller.js';
 import { verifyJWT } from '../middleware/auth.middleware.js';
 
@@ -25,5 +27,12 @@ router.route('/:id/upvote')
 
 router.route('/:id/view')
   .post(incrementViews);
+
+// Deletion endpoints
+router.route('/threads/:id')
+  .delete(deleteThread);
+
+router.route('/threads/:threadId/replies/:replyId')
+  .delete(deleteReply);
 
 export default router;

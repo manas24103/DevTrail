@@ -5,6 +5,7 @@ import { User } from "../models/User.models.js";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { sendWelcomeEmail, sendPasswordResetEmail } from "../utils/email.js";
+import { leetcodeRequest } from "../utils/leetcodeClient.js";
 //Token generation
 const generateAccessAndRefereshTokens = async (userId) => {
   try {
@@ -355,8 +356,22 @@ const updateHandles = asyncHandler(async (req, res) => {
     user.handles = {};
   }
 
-  if (codeforces !== undefined) user.handles.codeforces = codeforces;
-  if (leetcode !== undefined) user.handles.leetcode = leetcode;
+  if (codeforces !== undefined) {
+    if (codeforces.trim() === "") {
+      user.handles.codeforces = "";
+      user.handles.cfVerified = false;
+    } else if (codeforces.trim() !== user.handles.codeforces) {
+      throw new ApiError(400, "Codeforces handle must be verified. Please use the Verify flow in Settings.");
+    }
+  }
+  if (leetcode !== undefined) {
+    if (leetcode.trim() === "") {
+      user.handles.leetcode = "";
+      user.handles.lcVerified = false;
+    } else if (leetcode.trim() !== user.handles.leetcode) {
+      throw new ApiError(400, "LeetCode username must be verified. Please use the Verify flow in Settings.");
+    }
+  }
   if (codechef !== undefined) user.handles.codechef = codechef;
   if (gfg !== undefined) user.handles.gfg = gfg;
 
@@ -366,6 +381,134 @@ const updateHandles = asyncHandler(async (req, res) => {
 
   return res.status(200).json(
     new ApiResponse(200, updatedUser, "Handles updated successfully")
+  );
+});
+
+// Generate verification token
+const generateVerificationToken = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  let token = user.handles?.verificationToken;
+  if (!token) {
+    token = `DEVTRAIL-VERIFY-${crypto.randomBytes(4).toString("hex").toUpperCase()}`;
+    if (!user.handles) {
+      user.handles = {};
+    }
+    user.handles.verificationToken = token;
+    await user.save({ validateBeforeSave: false });
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200, { token }, "Verification token retrieved successfully")
+  );
+});
+
+// Verify external platform handle ownership and link it
+const verifyPlatformHandle = asyncHandler(async (req, res) => {
+  const { platform, handle } = req.body;
+  if (!platform || !handle) {
+    throw new ApiError(400, "Platform and handle are required");
+  }
+
+  const normalizedPlatform = platform.trim().toLowerCase();
+  const normalizedHandle = handle.trim();
+
+  if (normalizedPlatform !== "leetcode" && normalizedPlatform !== "codeforces") {
+    throw new ApiError(400, "Invalid platform. Supported platforms: leetcode, codeforces");
+  }
+
+  const user = await User.findById(req.user._id);
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  const token = user.handles?.verificationToken;
+  if (!token) {
+    throw new ApiError(400, "Verification token not generated. Please generate token first.");
+  }
+
+  const cleanToken = token.trim().toLowerCase();
+
+  // 1️⃣ Enforce Handle Uniqueness: check if handle is already verified by another user
+  if (normalizedPlatform === "leetcode") {
+    const duplicate = await User.findOne({
+      "handles.leetcode": { $regex: new RegExp(`^${normalizedHandle}$`, "i") },
+      "handles.lcVerified": true,
+      _id: { $ne: user._id }
+    });
+    if (duplicate) {
+      throw new ApiError(400, "This LeetCode handle is already verified and linked to another DevTrail account.");
+    }
+  } else if (normalizedPlatform === "codeforces") {
+    const duplicate = await User.findOne({
+      "handles.codeforces": { $regex: new RegExp(`^${normalizedHandle}$`, "i") },
+      "handles.cfVerified": true,
+      _id: { $ne: user._id }
+    });
+    if (duplicate) {
+      throw new ApiError(400, "This Codeforces handle is already verified and linked to another DevTrail account.");
+    }
+  }
+
+  // 2️⃣ Perform scraping validation
+  if (normalizedPlatform === "leetcode") {
+    const query = `
+      query userPublicProfile($username: String!) {
+        matchedUser(username: $username) {
+          profile {
+            aboutMe
+          }
+        }
+      }
+    `;
+
+    try {
+      const data = await leetcodeRequest(query, { username: normalizedHandle });
+      const aboutMe = data?.matchedUser?.profile?.aboutMe || "";
+      if (!aboutMe.toLowerCase().includes(cleanToken)) {
+        throw new ApiError(400, `Verification failed. Token '${token}' not found in LeetCode biography/About Me section.`);
+      }
+    } catch (err) {
+      throw new ApiError(400, err.message || "Failed to contact LeetCode API or verify handle. Please ensure your username is correct.");
+    }
+
+    // Set as verified
+    user.handles.leetcode = normalizedHandle;
+    user.handles.lcVerified = true;
+
+  } else if (normalizedPlatform === "codeforces") {
+    try {
+      const cfRes = await fetch(`https://codeforces.com/api/user.info?handles=${normalizedHandle}`);
+      const cfJson = await cfRes.json();
+      if (cfJson.status !== "OK") {
+        throw new ApiError(400, `Codeforces profile '${normalizedHandle}' not found.`);
+      }
+      const cfUser = cfJson.result[0];
+      const organization = cfUser?.organization || "";
+      const firstName = cfUser?.firstName || "";
+      const lastName = cfUser?.lastName || "";
+      const combinedFields = `${organization} ${firstName} ${lastName}`.toLowerCase();
+
+      if (!combinedFields.includes(cleanToken)) {
+        throw new ApiError(400, `Verification failed. Token '${token}' not found in Codeforces Organization/Name fields.`);
+      }
+    } catch (err) {
+      throw new ApiError(400, err.message || "Failed to contact Codeforces API or verify handle.");
+    }
+
+    // Set as verified
+    user.handles.codeforces = normalizedHandle;
+    user.handles.cfVerified = true;
+  }
+
+  // Save changes
+  await user.save({ validateBeforeSave: false });
+
+  return res.status(200).json(
+    new ApiResponse(200, user, `${platform === 'leetcode' ? 'LeetCode' : 'Codeforces'} handle verified and linked successfully!`)
   );
 });
 
@@ -379,5 +522,7 @@ export {
   getProfile,
   updateProfile,
   updateHandles,
-  generateAccessAndRefereshTokens
+  generateAccessAndRefereshTokens,
+  generateVerificationToken,
+  verifyPlatformHandle
 };

@@ -47,6 +47,8 @@ export const authApi = {
   getProfile: () => api.get('/v1/auth/me'),
   loginWithGoogle: (code, redirectUri, mode) => api.post('/v1/auth/google', { code, redirectUri, mode }),
   loginWithGitHub: (code, mode) => api.post('/v1/auth/github', { code, mode }),
+  getVerificationToken: () => api.post('/v1/auth/verification-token'),
+  verifyHandle: (platform, handle) => api.post('/v1/auth/verify-handle', { platform, handle }),
 };
 
 // ---------------- DASHBOARD ----------------
@@ -83,6 +85,8 @@ export const discussionsApi = {
   postReply: (id, body) => api.post(`/v1/discussions/${id}/replies`, { body }),
   toggleUpvote: (id) => api.post(`/v1/discussions/${id}/upvote`),
   incrementViews: (id) => api.post(`/v1/discussions/${id}/view`),
+  deleteThread: (id) => api.delete(`/v1/discussions/threads/${id}`),
+  deleteReply: (threadId, replyId) => api.delete(`/v1/discussions/threads/${threadId}/replies/${replyId}`),
 };
 
 // ---------------- CONTESTS ----------------

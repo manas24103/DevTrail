@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { userApi } from '../services/api';
+import { userApi, authApi } from '../services/api';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import Footer from '../components/Footer';
-import { User, Mail, Code2, Link as FileText, GraduationCap, Github, Linkedin, Twitter, Globe, Save, CheckCircle, Sparkles } from 'lucide-react';
+import { User, Mail, Code2, Link as FileText, GraduationCap, Github, Linkedin, Twitter, Globe, Save, CheckCircle, Sparkles, Clipboard, ExternalLink, Check, X } from 'lucide-react';
 import Mascot from '../components/Mascot';
 
 const SettingsPage = () => {
@@ -24,6 +24,12 @@ const SettingsPage = () => {
     website: ''
   });
 
+  const [verificationToken, setVerificationToken] = useState('');
+  const [copied, setCopied] = useState(false);
+  const [lcVerified, setLcVerified] = useState(false);
+  const [cfVerified, setCfVerified] = useState(false);
+  const [verifyLoading, setVerifyLoading] = useState(false);
+
   // Load current user data on mount
   useEffect(() => {
     if (currentUser) {
@@ -38,7 +44,19 @@ const SettingsPage = () => {
         twitter: currentUser.socials?.twitter || '',
         website: currentUser.socials?.website || ''
       });
+      setLcVerified(!!currentUser.handles?.lcVerified);
+      setCfVerified(!!currentUser.handles?.cfVerified);
     }
+
+    const fetchToken = async () => {
+      try {
+        const res = await authApi.getVerificationToken();
+        setVerificationToken(res.token || res);
+      } catch (err) {
+        console.error("Error loading verification token:", err);
+      }
+    };
+    fetchToken();
   }, [currentUser]);
 
   const handleChange = (e) => {
@@ -47,6 +65,39 @@ const SettingsPage = () => {
       ...prev,
       [name]: value
     }));
+  };
+
+  const copyToClipboard = () => {
+    if (verificationToken) {
+      navigator.clipboard.writeText(verificationToken);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const handleVerify = async (platform) => {
+    const handle = platform === 'leetcode' ? formData.leetcodeHandle : formData.codeforcesHandle;
+    if (!handle.trim()) {
+      setMessage({ type: 'error', text: `Please enter a ${platform === 'leetcode' ? 'LeetCode' : 'Codeforces'} handle to verify.` });
+      return;
+    }
+
+    setVerifyLoading(true);
+    setMessage({ type: '', text: '' });
+
+    try {
+      const response = await authApi.verifyHandle(platform, handle.trim());
+      const updatedUser = response?.user || response;
+      updateUser(updatedUser);
+      
+      if (platform === 'leetcode') setLcVerified(true);
+      if (platform === 'codeforces') setCfVerified(true);
+      setMessage({ type: 'success', text: `${platform === 'leetcode' ? 'LeetCode' : 'Codeforces'} handle verified and linked successfully!` });
+    } catch (err) {
+      setMessage({ type: 'error', text: err.response?.data?.message || err.message || `Failed to verify ${platform} handle.` });
+    } finally {
+      setVerifyLoading(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -199,43 +250,132 @@ const SettingsPage = () => {
 
                   {/* Section 2: Platform Handles */}
                   <div className="space-y-4">
-                    <div className="border-b-2 border-black pb-2">
+                    <div className="border-b-2 border-black pb-2 flex items-center justify-between">
                       <h2 className="text-sm font-black text-black uppercase font-outfit">Platform Handles</h2>
+                      <span className="text-[10px] font-black text-[#FF3366] uppercase">Ownership verification required</span>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {/* Codeforces */}
+                    {/* Verification Key Display Box */}
+                    <div className="bg-[#FFFDF0] border-2 border-black p-4 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex items-center justify-between mb-4">
                       <div>
-                        <label htmlFor="codeforcesHandle" className="block text-xs font-black text-black uppercase mb-1.5">Codeforces Handle</label>
-                        <div className="relative">
-                          <Code2 className="absolute left-3 top-1/2 -translate-y-1/2 text-black" size={16} />
-                          <input
-                            id="codeforcesHandle"
-                            name="codeforcesHandle"
-                            type="text"
-                            value={formData.codeforcesHandle}
-                            onChange={handleChange}
-                            placeholder="username"
-                            className="w-full px-3 py-2.5 pl-9 brutal-input text-xs"
-                          />
-                        </div>
+                        <p className="text-[9px] font-black text-gray-400 uppercase">YOUR UNIQUE VERIFICATION KEY</p>
+                        <code className="text-xs font-mono font-bold text-black tracking-wider">{verificationToken || 'Generating token...'}</code>
+                      </div>
+                      <button 
+                        type="button"
+                        onClick={copyToClipboard}
+                        className="px-3 py-1.5 border-2 border-black bg-white hover:bg-gray-50 text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center gap-1.5 text-[9px] font-black uppercase"
+                      >
+                        <Clipboard size={12} />
+                        {copied ? 'Copied!' : 'Copy'}
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Codeforces */}
+                      <div className="space-y-2">
+                        <label className="block text-xs font-black text-black uppercase">Codeforces Handle</label>
+                        {cfVerified ? (
+                          <div className="bg-emerald-50 border-2 border-emerald-500 p-3.5 flex items-center justify-between shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)]">
+                            <span className="text-xs font-black text-emerald-800 uppercase flex items-center gap-2">
+                              <Check size={14} className="stroke-[3]" /> CF VERIFIED: {formData.codeforcesHandle}
+                            </span>
+                            <button 
+                              type="button"
+                              onClick={() => {
+                                setCfVerified(false);
+                                setFormData(prev => ({ ...prev, codeforcesHandle: '' }));
+                              }} 
+                              className="text-[9px] font-black text-gray-500 hover:text-black uppercase underline"
+                            >
+                              Unlink
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex gap-2">
+                            <div className="relative flex-1">
+                              <Code2 className="absolute left-3 top-1/2 -translate-y-1/2 text-black" size={16} />
+                              <input
+                                id="codeforcesHandle"
+                                name="codeforcesHandle"
+                                type="text"
+                                value={formData.codeforcesHandle}
+                                onChange={handleChange}
+                                placeholder="username"
+                                className="w-full px-3 py-2.5 pl-9 brutal-input text-xs"
+                              />
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => handleVerify('codeforces')}
+                              disabled={verifyLoading || !formData.codeforcesHandle}
+                              className="px-4 py-2 border-2 border-black bg-[#FFD700] text-black font-black text-xs shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all uppercase flex items-center gap-1.5"
+                            >
+                              Verify
+                            </button>
+                          </div>
+                        )}
+                        {!cfVerified && (
+                          <div className="flex justify-between items-center text-[9px] font-bold text-gray-400 uppercase">
+                            <span>Paste key in Organization</span>
+                            <a href="https://codeforces.com/settings/social" target="_blank" rel="noreferrer" className="text-gray-500 hover:text-black flex items-center gap-0.5 underline">
+                              CF Settings <ExternalLink size={8} />
+                            </a>
+                          </div>
+                        )}
                       </div>
 
                       {/* LeetCode */}
-                      <div>
-                        <label htmlFor="leetcodeHandle" className="block text-xs font-black text-black uppercase mb-1.5">LeetCode Username</label>
-                        <div className="relative">
-                          <Code2 className="absolute left-3 top-1/2 -translate-y-1/2 text-black" size={16} />
-                          <input
-                            id="leetcodeHandle"
-                            name="leetcodeHandle"
-                            type="text"
-                            value={formData.leetcodeHandle}
-                            onChange={handleChange}
-                            placeholder="username"
-                            className="w-full px-3 py-2.5 pl-9 brutal-input text-xs"
-                          />
-                        </div>
+                      <div className="space-y-2">
+                        <label className="block text-xs font-black text-black uppercase">LeetCode Username</label>
+                        {lcVerified ? (
+                          <div className="bg-emerald-50 border-2 border-emerald-500 p-3.5 flex items-center justify-between shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)]">
+                            <span className="text-xs font-black text-emerald-800 uppercase flex items-center gap-2">
+                              <Check size={14} className="stroke-[3]" /> LC VERIFIED: {formData.leetcodeHandle}
+                            </span>
+                            <button 
+                              type="button"
+                              onClick={() => {
+                                setLcVerified(false);
+                                setFormData(prev => ({ ...prev, leetcodeHandle: '' }));
+                              }} 
+                              className="text-[9px] font-black text-gray-500 hover:text-black uppercase underline"
+                            >
+                              Unlink
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex gap-2">
+                            <div className="relative flex-1">
+                              <Code2 className="absolute left-3 top-1/2 -translate-y-1/2 text-black" size={16} />
+                              <input
+                                id="leetcodeHandle"
+                                name="leetcodeHandle"
+                                type="text"
+                                value={formData.leetcodeHandle}
+                                onChange={handleChange}
+                                placeholder="username"
+                                className="w-full px-3 py-2.5 pl-9 brutal-input text-xs"
+                              />
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => handleVerify('leetcode')}
+                              disabled={verifyLoading || !formData.leetcodeHandle}
+                              className="px-4 py-2 border-2 border-black bg-[#FFD700] text-black font-black text-xs shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all uppercase flex items-center gap-1.5"
+                            >
+                              Verify
+                            </button>
+                          </div>
+                        )}
+                        {!lcVerified && (
+                          <div className="flex justify-between items-center text-[9px] font-bold text-gray-400 uppercase">
+                            <span>Paste key in About Me</span>
+                            <a href="https://leetcode.com/profile/" target="_blank" rel="noreferrer" className="text-gray-500 hover:text-black flex items-center gap-0.5 underline">
+                              LC Settings <ExternalLink size={8} />
+                            </a>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

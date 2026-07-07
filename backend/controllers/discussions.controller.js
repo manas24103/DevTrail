@@ -176,3 +176,56 @@ export const incrementViews = asyncHandler(async (req, res) => {
     new ApiResponse(200, thread)
   );
 });
+
+// Delete a thread (creator-only)
+export const deleteThread = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const thread = await Thread.findById(id);
+
+  if (!thread) {
+    throw new ApiError(404, "Thread not found");
+  }
+
+  // Verify authorship
+  if (thread.author.toString() !== req.user._id.toString()) {
+    throw new ApiError(403, "You are not authorized to delete this thread");
+  }
+
+  await Thread.deleteOne({ _id: id });
+
+  return res.status(200).json(
+    new ApiResponse(200, { deletedId: id }, "Thread deleted successfully")
+  );
+});
+
+// Delete a reply comment inside a thread (creator-only)
+export const deleteReply = asyncHandler(async (req, res) => {
+  const { threadId, replyId } = req.params;
+  const thread = await Thread.findById(threadId);
+
+  if (!thread) {
+    throw new ApiError(404, "Thread not found");
+  }
+
+  const reply = thread.replies.id(replyId);
+  if (!reply) {
+    throw new ApiError(404, "Comment not found");
+  }
+
+  // Verify authorship
+  if (reply.author.toString() !== req.user._id.toString()) {
+    throw new ApiError(403, "You are not authorized to delete this comment");
+  }
+
+  // Remove the subdocument from array
+  thread.replies.pull({ _id: replyId });
+  await thread.save();
+
+  const updatedThread = await Thread.findById(threadId)
+    .populate("author", "username fullName handles")
+    .populate("replies.author", "username fullName");
+
+  return res.status(200).json(
+    new ApiResponse(200, updatedThread, "Comment deleted successfully")
+  );
+});

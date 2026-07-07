@@ -17,7 +17,7 @@ const useProblemStats = () => {
   const [error, setError] = useState(null);
 
   // Fetch dashboard data
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = async (force = false) => {
     try {
       setLoading(true);
       setError(null);
@@ -25,11 +25,13 @@ const useProblemStats = () => {
       // Fetch dashboard data
       const dashboardData = await dashboardApi.getDashboard();
       
+      const params = force ? { forceRefresh: 'true' } : {};
+
       // Fetch LeetCode data if handle exists
       let leetcodeData = null;
       if (dashboardData.handles?.leetcode) {
         try {
-          leetcodeData = await leetcodeApi.getDashboard();
+          leetcodeData = await leetcodeApi.getDashboard(params);
         } catch (err) {
           console.error('Error fetching LeetCode data:', err);
         }
@@ -39,7 +41,7 @@ const useProblemStats = () => {
       let codeforcesData = null;
       if (dashboardData.handles?.codeforces) {
         try {
-          codeforcesData = await codeforcesApi.getDashboard();
+          codeforcesData = await codeforcesApi.getDashboard(params);
         } catch (err) {
           console.error('Error fetching Codeforces data:', err);
         }
@@ -52,7 +54,7 @@ const useProblemStats = () => {
           codeforces: codeforcesData?.stats || null,
         },
         handles: dashboardData.handles,
-        totalContests: dashboardData.totalContests || 0,
+        totalContests: (leetcodeData?.stats?.contestsCount || 0) + (codeforcesData?.stats?.contestsCount || 0),
         totalProblems: (leetcodeData?.stats?.solvedCount || 0) + (codeforcesData?.stats?.solvedCount || 0),
         easy: (leetcodeData?.stats?.difficulty?.easy || 0) + (codeforcesData?.stats?.difficulty?.easy || 0),
         medium: (leetcodeData?.stats?.difficulty?.medium || 0) + (codeforcesData?.stats?.difficulty?.medium || 0),
@@ -87,7 +89,7 @@ const useProblemStats = () => {
 
   // Function to refresh data
   const refreshData = () => {
-    return fetchDashboardData();
+    return fetchDashboardData(true);
   };
 
   return {

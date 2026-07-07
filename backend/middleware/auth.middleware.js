@@ -20,6 +20,12 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
       }
       
       req.user = user;
+      
+      // Update last activity asynchronously without blocking the request
+      User.findByIdAndUpdate(user._id, { lastActivity: new Date() }).catch(err => {
+        console.error("Failed to update user lastActivity:", err.message);
+      });
+
       next();
     } catch (error) {
       throw new ApiError(401, error?.message || "Invalid access token");

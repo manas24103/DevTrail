@@ -255,9 +255,14 @@ const DashboardContent = ({ stats, refreshing, onRefresh, chartTab, setChartTab 
                   <button className="lg:hidden p-2 border-2 border-black rounded shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] bg-white" aria-label="Open sidebar"><Menu size={20} /></button>
                   <h1 className="text-3xl font-black text-black font-outfit uppercase">DASHBOARD</h1>
                 </div>
-                <p className="text-xs font-bold text-gray-500 mt-1 flex items-center gap-1.5 uppercase">
-                  <RefreshCw size={12} className="stroke-[2.5]" /> LAST SYNCED 2 HOURS AGO
-                </p>
+                <button
+                  onClick={onRefresh}
+                  disabled={refreshing}
+                  className="text-xs font-bold text-gray-500 mt-1 flex items-center gap-1.5 uppercase hover:text-black transition-colors disabled:opacity-50"
+                >
+                  <RefreshCw size={12} className={`stroke-[2.5] ${refreshing ? 'animate-spin' : ''}`} />
+                  {refreshing ? 'Syncing...' : 'Sync Stats'}
+                </button>
               </div>
               <button className="px-5 py-2.5 border-2 border-black bg-[#FF3366] text-white text-sm font-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center gap-2 uppercase font-outfit">
                 <TrendingUp size={14} className="stroke-[3]" /> KEEP YOUR STREAK ALIVE
@@ -345,9 +350,9 @@ const DashboardContent = ({ stats, refreshing, onRefresh, chartTab, setChartTab 
                 </div>
                 <div className="mt-4 space-y-2">
                   {[
-                    { label: 'EASY', value: `${easy || 450}/500`, pct: ((easy || 450) / 500) * 100, color: 'bg-emerald-500' },
-                    { label: 'MEDIUM', value: `${medium || 420}/800`, pct: ((medium || 420) / 800) * 100, color: 'bg-[#FFD700]' },
-                    { label: 'HARD', value: `${hard || 140}/300`, pct: ((hard || 140) / 300) * 100, color: 'bg-[#FF3366]' },
+                    { label: 'EASY', value: `${easy}`, pct: (easy / Math.max(easy + medium + hard, 1)) * 100, color: 'bg-emerald-500' },
+                    { label: 'MEDIUM', value: `${medium}`, pct: (medium / Math.max(easy + medium + hard, 1)) * 100, color: 'bg-[#FFD700]' },
+                    { label: 'HARD', value: `${hard}`, pct: (hard / Math.max(easy + medium + hard, 1)) * 100, color: 'bg-[#FF3366]' },
                   ].map(({ label, value, pct, color }) => (
                     <div key={label} className="flex items-center gap-3">
                       <span className="text-xs font-black text-black w-14">{label}</span>

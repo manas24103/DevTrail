@@ -8,7 +8,9 @@ import {
     refreshAccessToken,
     getProfile,
     updateProfile,
-    updateHandles
+    updateHandles,
+    generateVerificationToken,
+    verifyPlatformHandle
 } from '../controllers/user.controller.js';
 import { googleLogin, githubLogin } from '../controllers/oauth.controller.js';
 import { verifyJWT } from '../middleware/auth.middleware.js';
@@ -21,6 +23,10 @@ router.route('/logout').post(verifyJWT, logoutUser);
 router.route('/forgot-password').post(forgotPassword);
 router.route('/login').post(loginUser);
 router.route('/register').post(registerUser);
+
+// Verification endpoints
+router.route('/verification-token').post(verifyJWT, generateVerificationToken);
+router.route('/verify-handle').post(verifyJWT, verifyPlatformHandle);
 
 // Profile and handle management routes
 router.route('/me').get(verifyJWT, getProfile).patch(verifyJWT, updateProfile);

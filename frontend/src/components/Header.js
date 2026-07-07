@@ -39,14 +39,13 @@ const Header = () => {
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-6 ml-auto">
           {/* Dark mode toggle */}
-          <button
+          {/*<button
             onClick={() => setIsDark(!isDark)}
             className="p-2 border-2 border-black bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all"
             aria-label="Toggle dark mode"
           >
             {isDark ? <Sun size={16} className="text-black stroke-[2.5]" /> : <Moon size={16} className="text-black stroke-[2.5]" />}
-          </button>
-
+          </button>*/}
           <span className="h-6 w-[2px] bg-black"></span>
 
           {isAuthenticated ? (

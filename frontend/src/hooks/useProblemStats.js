@@ -51,6 +51,8 @@ const useProblemStats = () => {
           leetcode: leetcodeData?.stats || null,
           codeforces: codeforcesData?.stats || null,
         },
+        handles: dashboardData.handles,
+        totalContests: dashboardData.totalContests || 0,
         totalProblems: (leetcodeData?.stats?.solvedCount || 0) + (codeforcesData?.stats?.solvedCount || 0),
         easy: (leetcodeData?.stats?.difficulty?.easy || 0) + (codeforcesData?.stats?.difficulty?.easy || 0),
         medium: (leetcodeData?.stats?.difficulty?.medium || 0) + (codeforcesData?.stats?.difficulty?.medium || 0),

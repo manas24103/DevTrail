@@ -66,6 +66,20 @@ const userSchema = new mongoose.Schema({
       default: 'all'
     }
   },
+  about: {
+    type: String,
+    default: ''
+  },
+  education: {
+    type: String,
+    default: ''
+  },
+  socials: {
+    github: { type: String, default: '' },
+    linkedin: { type: String, default: '' },
+    twitter: { type: String, default: '' },
+    website: { type: String, default: '' }
+  }
 }
 ,{timestamps: true}
 );

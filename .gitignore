@@ -17,7 +17,14 @@ Thumbs.db
 node_modules/
 
 # Environment files
-.env
-.env.*
-frontend/.env*
+.env.development
+.env.local
+.env.production
+
+# Frontend
+frontend/.env
+frontend/.env.*
+
+# Backend
+backend/.env
 backend/.env*

@@ -23,6 +23,10 @@ const platformStatsSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  contestsCount: {
+    type: Number,
+    default: 0
+  },
   difficulty:{
     easy: { type: Number, default: 0 },
     medium: { type: Number, default: 0 },

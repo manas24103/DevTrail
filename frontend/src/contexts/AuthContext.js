@@ -25,13 +25,14 @@ export const AuthProvider = ({ children }) => {
   // Fetch user profile
   const fetchUserProfile = async () => {
     try {
-      const response = await api.get('/users/me');
-      setCurrentUser(response.data);
+      const response = await authApi.getProfile();
+      setCurrentUser(response?.user || response);
     } catch (err) {
       console.error('Error fetching user profile:', err);
-      if (err.response?.status === 401) {
+      if (err.status === 401 || err.response?.status === 401 || err.message?.includes('jwt malformed')) {
         // Token expired or invalid, clear it
         localStorage.removeItem('token');
+        setCurrentUser(null);
       }
     } finally {
       setLoading(false);
@@ -50,7 +51,6 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       setError('');
-      setLoading(true);
       const response = await authApi.login(email, password);
       const { accessToken, user } = response;
       
@@ -60,17 +60,15 @@ export const AuthProvider = ({ children }) => {
       // Set the current user
       setCurrentUser(user);
       
-      return { success: true };
+      return { success: true, user };
     } catch (err) {
       console.error('Login error:', err);
-      const errorMessage = err.response?.data?.message || 'Login failed. Please check your credentials.';
+      const errorMessage = err.message || 'Login failed. Please check your credentials.';
       setError(errorMessage);
       return { 
         success: false, 
         error: errorMessage 
       };
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -78,37 +76,32 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       setError('');
-      setLoading(true);
-      const response = await authApi.register(userData);
+      
+      const payload = {
+        fullName: userData.name,
+        email: userData.email,
+        password: userData.password
+      };
+
+      const response = await authApi.register(payload);
       console.log('Registration response:', response);
       
-      // Handle successful registration
-      if (response && response.success) {
-        // Store the token in localStorage if it exists in the response
-        if (response.token) {
-          localStorage.setItem('token', response.token);
-        }
-        
-        // Set the current user with the data from the response
-        if (response.data) {
-          setCurrentUser(response.data);
-          return { success: true, user: response.data };
-        } else {
-          // If no user data in response, try to fetch it
-          try {
-            const profileResponse = await authApi.getProfile();
-            setCurrentUser(profileResponse);
-            return { success: true, user: profileResponse };
-          } catch (profileErr) {
-            console.error('Error fetching user profile:', profileErr);
-            return { success: true, user: null };
-          }
-        }
+      // Handle successful registration: extract token and user details
+      const token = response?.accessToken || response?.token;
+      const user = response?.user || response;
+
+      if (token) {
+        localStorage.setItem('token', token);
+      }
+
+      if (user && (user._id || user.email)) {
+        setCurrentUser(user);
+        return { success: true, user };
       } else {
-        throw new Error(response?.message || 'Registration failed');
+        throw new Error('Registration failed');
       }
     } catch (err) {
-      const errorMessage = err.response?.data?.message || 'Registration failed. Please try again.';
+      const errorMessage = err.message || 'Registration failed. Please try again.';
       setError(errorMessage);
       return { 
         success: false, 
@@ -132,7 +125,7 @@ export const AuthProvider = ({ children }) => {
       const response = await authApi.getProfile();
       setCurrentUser(prev => ({
         ...prev,
-        ...response.data.data,
+        ...(response?.user || response),
         ...data
       }));
       return { success: true };
@@ -145,6 +138,50 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Login with Google
+  const loginWithGoogle = async (code, redirectUri, mode) => {
+    try {
+      setError('');
+      const response = await authApi.loginWithGoogle(code, redirectUri, mode);
+      const { accessToken, user } = response;
+      if (accessToken) {
+        localStorage.setItem('token', accessToken);
+      }
+      if (user) {
+        setCurrentUser(user);
+        return { success: true, user };
+      }
+      return { success: false, error: 'Failed to retrieve profile' };
+    } catch (err) {
+      console.error('Google login error:', err);
+      const errorMessage = err.message || 'Google login failed';
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
+    }
+  };
+
+  // Login with GitHub
+  const loginWithGitHub = async (code, mode) => {
+    try {
+      setError('');
+      const response = await authApi.loginWithGitHub(code, mode);
+      const { accessToken, user } = response;
+      if (accessToken) {
+        localStorage.setItem('token', accessToken);
+      }
+      if (user) {
+        setCurrentUser(user);
+        return { success: true, user };
+      }
+      return { success: false, error: 'Failed to retrieve profile' };
+    } catch (err) {
+      console.error('GitHub login error:', err);
+      const errorMessage = err.message || 'GitHub login failed';
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
+    }
+  };
+
   const value = {
     currentUser,
     loading,
@@ -154,6 +191,8 @@ export const AuthProvider = ({ children }) => {
     logout,
     updateProfile,
     updateUser,
+    loginWithGoogle,
+    loginWithGitHub,
     isAuthenticated: !!currentUser,
   };
 

@@ -33,7 +33,10 @@ api.interceptors.response.use(
   (error) => {
     // Handle errors in a standard way
     const errorMessage = error.response?.data?.message || error.message || 'Something went wrong';
-    return Promise.reject(new Error(errorMessage));
+    const customError = new Error(errorMessage);
+    customError.response = error.response;
+    customError.status = error.response?.status;
+    return Promise.reject(customError);
   }
 );
 
@@ -41,7 +44,9 @@ api.interceptors.response.use(
 export const authApi = {
   login: (email, password) => api.post('/v1/auth/login', { email, password }),
   register: (userData) => api.post('/v1/auth/register', userData),
-  getProfile: () => api.get('/v1/users/me'),
+  getProfile: () => api.get('/v1/auth/me'),
+  loginWithGoogle: (code, redirectUri, mode) => api.post('/v1/auth/google', { code, redirectUri, mode }),
+  loginWithGitHub: (code, mode) => api.post('/v1/auth/github', { code, mode }),
 };
 
 // ---------------- DASHBOARD ----------------
@@ -51,24 +56,38 @@ export const dashboardApi = {
 
 // ---------------- LEETCODE ----------------
 export const leetcodeApi = {
-  getDashboard: (params = {}) => api.get('/v1/leetcode', { params }),
+  getDashboard: (params = {}) => api.get('/v1/leetcode/stats', { params }),
 };
 
 // ---------------- CODEFORCES ----------------
 export const codeforcesApi = {
-  getDashboard: (params = {}) => api.get('/v1/codeforces', { params }),
+  getDashboard: (params = {}) => api.get('/v1/codeforces/stats', { params }),
 };
 
 // ---------------- USER ----------------
 export const userApi = {
-  updateProfile: (data) => api.patch('/v1/users/me', data),
-  changePassword: (data) => api.patch('/v1/users/change-password', data),
-  updateHandles: (data) => api.patch('/v1/users/update-handles', data),
+  updateProfile: (data) => api.patch('/v1/auth/me', data),
+  changePassword: (data) => api.post('/v1/auth/change-password', data),
+  updateHandles: (data) => api.patch('/v1/auth/update-handles', data),
 };
 
 // ---------------- LEADERBOARD ----------------
 export const leaderboardApi = {
   getLeaderboard: () => api.get('/leaderboard'),
+};
+
+// ---------------- DISCUSSIONS ----------------
+export const discussionsApi = {
+  getThreads: (params = {}) => api.get('/v1/discussions', { params }),
+  createThread: (data) => api.post('/v1/discussions', data),
+  postReply: (id, body) => api.post(`/v1/discussions/${id}/replies`, { body }),
+  toggleUpvote: (id) => api.post(`/v1/discussions/${id}/upvote`),
+  incrementViews: (id) => api.post(`/v1/discussions/${id}/view`),
+};
+
+// ---------------- CONTESTS ----------------
+export const contestsApi = {
+  getContests: () => api.get('/v1/contests'),
 };
 
 export default api;

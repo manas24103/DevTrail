@@ -14,18 +14,21 @@ export const getDashboard = asyncHandler(async (req, res) => {
         view: "all",
         totalSolved: 0,
         difficulty: { easy: 0, medium: 0, hard: 0 },
-        platforms: {}
+        platforms: {},
+        handles: req.user.handles
       })
     );
   }
 
   let totalSolved = 0;
+  let totalContests = 0;
   const difficulty = { easy: 0, medium: 0, hard: 0 };
   const platforms = {};
 
   for (const s of stats) {
     // total solved
     totalSolved += s.solvedCount;
+    totalContests += (s.contestsCount || 0);
 
     // overall difficulty
     difficulty.easy += s.difficulty.easy;
@@ -42,8 +45,10 @@ export const getDashboard = asyncHandler(async (req, res) => {
     new ApiResponse(200, {
       view: "all",
       totalSolved,
+      totalContests,
       difficulty,
-      platforms
+      platforms,
+      handles: req.user.handles
     })
   );
 });

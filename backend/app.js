@@ -6,6 +6,8 @@ import userRoutes from "./routes/user.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
 import leetcodeRoutes from "./routes/leetcode.routes.js";
 import codeforcesRoutes from "./routes/codeforces.routes.js";
+import discussionsRoutes from "./routes/discussions.routes.js";
+import contestsRoutes from "./routes/contests.routes.js";
 
 const app = express();
 
@@ -22,11 +24,13 @@ app.use("/api/v1/auth", userRoutes);
 app.use("/api/v1/dashboard", dashboardRoutes);
 app.use("/api/v1/leetcode", leetcodeRoutes);
 app.use("/api/v1/codeforces", codeforcesRoutes);
+app.use("/api/v1/discussions", discussionsRoutes);
+app.use("/api/v1/contests", contestsRoutes);
 
 // global error handler
 app.use((err, req, res, next) => {
   console.error("Error:", err);
-  res.status(err.status || 500).json({
+  res.status(err.statusCode || err.status || 500).json({
     success: false,
     message: err.message || "Internal Server Error"
   });

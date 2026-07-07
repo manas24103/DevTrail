@@ -48,6 +48,7 @@ const contestData = await leetcodeRequest(
 );
 const rating = contestData.userContestRanking?.rating || 0;
 const globalRanking = contestData.userContestRanking?.globalRanking || 0;
+const attendedContestsCount = contestData.userContestRanking?.attendedContestsCount || 0;
 
   // 4️⃣ Recent accepted submissions
 const recentData = await leetcodeRequest(
@@ -70,6 +71,7 @@ const recentSolved =
     },
     {
       solvedCount,
+      contestsCount: attendedContestsCount,
       difficulty,
       rating: rating,
       rank: globalRanking,

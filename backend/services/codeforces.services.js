@@ -21,6 +21,14 @@ export const getCodeforcesStats = async (userId, handle,forceRefresh=false) => {
   // 2️⃣ Fetch fresh data
   const [userInfo] = await cfRequest("/user.info", { handles: handle });
   const submissions = await cfRequest("/user.status", { handle });
+  
+  let cfContestsCount = 0;
+  try {
+    const cfRatingHistory = await cfRequest("/user.rating", { handle });
+    cfContestsCount = Array.isArray(cfRatingHistory) ? cfRatingHistory.length : 0;
+  } catch (err) {
+    console.error("Failed to fetch CF rating history:", err.message);
+  }
 
   // 3️⃣ Compute stats
   const solvedSet = new Set();
@@ -55,6 +63,7 @@ export const getCodeforcesStats = async (userId, handle,forceRefresh=false) => {
       rating: userInfo.rating || 0,
       rank: userInfo.rank || "",
       solvedCount: solvedSet.size,
+      contestsCount: cfContestsCount,
       difficulty,
       status: "success",
       lastUpdated: new Date()

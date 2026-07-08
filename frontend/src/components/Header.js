@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Menu, X, Moon, Sun, User } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -7,6 +7,12 @@ import { useAuthMode } from '../contexts/AuthModeContext';
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const handleToggleMobileMenu = () => setMobileOpen(prev => !prev);
+    window.addEventListener('toggle-mobile-menu', handleToggleMobileMenu);
+    return () => window.removeEventListener('toggle-mobile-menu', handleToggleMobileMenu);
+  }, []);
   const { isAuthenticated, currentUser, logout } = useAuth();
   const { setAuthMode } = useAuthMode();
   const navigate = useNavigate();
@@ -39,13 +45,13 @@ const Header = () => {
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-6 ml-auto">
           {/* Dark mode toggle */}
-          {/*<button
+          {<button
             onClick={() => setIsDark(!isDark)}
             className="p-2 border-2 border-black bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all"
             aria-label="Toggle dark mode"
           >
             {isDark ? <Sun size={16} className="text-black stroke-[2.5]" /> : <Moon size={16} className="text-black stroke-[2.5]" />}
-          </button>*/}
+          </button>}
           <span className="h-6 w-[2px] bg-black"></span>
 
           {isAuthenticated ? (
@@ -103,23 +109,38 @@ const Header = () => {
 
             <div className="pt-3 border-t-2 border-black space-y-2">
               {isAuthenticated ? (
-                <>
-                  <Link to="/dashboard" onClick={() => setMobileOpen(false)} className="block px-4 py-2 border-2 border-black bg-[#E0F2FE] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] text-black text-center">
-                    DASHBOARD
+                <div className="flex flex-col gap-2">
+                  <Link to="/home" onClick={() => setMobileOpen(false)} className="block px-4 py-2.5 border-2 border-black bg-white hover:bg-[#E0F2FE] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] text-black text-center font-black uppercase">
+                    🏠 HOME
                   </Link>
-                  <button onClick={() => { handleLogout(); setMobileOpen(false); }} className="w-full px-4 py-2 border-2 border-black bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] text-black text-center">
-                    LOGOUT
+                  <Link to="/dashboard" onClick={() => setMobileOpen(false)} className="block px-4 py-2.5 border-2 border-black bg-[#E0F2FE] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] text-black text-center font-black uppercase">
+                    📊 DASHBOARD
+                  </Link>
+                  <Link to="/discussions" onClick={() => setMobileOpen(false)} className="block px-4 py-2.5 border-2 border-black bg-white hover:bg-[#E0F2FE] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] text-black text-center font-black uppercase">
+                    💬 DISCUSSION
+                  </Link>
+                  <Link to="/contests" onClick={() => setMobileOpen(false)} className="block px-4 py-2.5 border-2 border-black bg-white hover:bg-[#E0F2FE] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] text-black text-center font-black uppercase">
+                    🏆 CONTESTS
+                  </Link>
+                  <Link to="/problems" onClick={() => setMobileOpen(false)} className="block px-4 py-2.5 border-2 border-black bg-white hover:bg-[#E0F2FE] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] text-black text-center font-black uppercase">
+                    💻 PROBLEMS
+                  </Link>
+                  <Link to="/settings" onClick={() => setMobileOpen(false)} className="block px-4 py-2.5 border-2 border-black bg-white hover:bg-[#E0F2FE] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] text-black text-center font-black uppercase">
+                    ⚙️ SETTINGS
+                  </Link>
+                  <button onClick={() => { handleLogout(); setMobileOpen(false); }} className="w-full px-4 py-2.5 border-2 border-black bg-[#FFE0E6] text-black hover:bg-[#FF3366] hover:text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] text-center font-black uppercase">
+                    🚪 LOGOUT
                   </button>
-                </>
+                </div>
               ) : (
-                <>
-                  <button onClick={() => { setAuthMode('login'); navigate('/auth'); setMobileOpen(false); }} className="w-full px-4 py-2 border-2 border-black bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] text-black text-center">
+                <div className="flex flex-col gap-2">
+                  <button onClick={() => { setAuthMode('login'); navigate('/auth'); setMobileOpen(false); }} className="w-full px-4 py-2.5 border-2 border-black bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] text-black text-center font-black uppercase">
                     LOGIN
                   </button>
-                  <button onClick={() => { setAuthMode('signup'); navigate('/auth'); setMobileOpen(false); }} className="w-full px-4 py-2 border-2 border-black bg-[#FF3366] text-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] text-center">
+                  <button onClick={() => { setAuthMode('signup'); navigate('/auth'); setMobileOpen(false); }} className="w-full px-4 py-2.5 border-2 border-black bg-[#FF3366] text-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] text-center font-black uppercase">
                     SIGN UP
                   </button>
-                </>
+                </div>
               )}
             </div>
           </div>

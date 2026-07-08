@@ -252,7 +252,13 @@ const DashboardContent = ({ stats, refreshing, onRefresh, chartTab, setChartTab 
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
                 <div className="flex items-center gap-3">
-                  <button className="lg:hidden p-2 border-2 border-black rounded shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] bg-white" aria-label="Open sidebar"><Menu size={20} /></button>
+                  <button
+                    onClick={() => window.dispatchEvent(new CustomEvent('toggle-mobile-menu'))}
+                    className="lg:hidden p-2 border-2 border-black rounded shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] bg-white"
+                    aria-label="Open sidebar"
+                  >
+                    <Menu size={20} />
+                  </button>
                   <h1 className="text-3xl font-black text-black font-outfit uppercase">DASHBOARD</h1>
                 </div>
                 <button
